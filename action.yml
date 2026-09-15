@@ -1,0 +1,72 @@
+name: cryptarium
+description: Discover cryptography in a repository and emit CBOM / SARIF / migration reports for post-quantum readiness.
+author: sgoveia
+
+inputs:
+  path:
+    description: Path to scan
+    required: false
+    default: "."
+  fail-on:
+    description: Fail when a finding reaches this priority (critical|high|medium|low|none)
+    required: false
+    default: none
+  format:
+    description: Human report format (markdown|json|cbom)
+    required: false
+    default: markdown
+  output:
+    description: Output file for the human report format
+    required: false
+    default: CRYPTO-REPORT.md
+  upload-sarif:
+    description: Also emit results.sarif and upload to GitHub code scanning
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: "1.26"
+        cache: true
+
+    - name: Install cryptarium from action ref
+      shell: bash
+      env:
+        CGO_ENABLED: "0"
+      run: |
+        set -euo pipefail
+        go install "${GITHUB_ACTION_PATH}/cmd/cryptarium@${GITHUB_ACTION_REF}" 2>/dev/null \
+          || (cd "${GITHUB_ACTION_PATH}" && go install ./cmd/cryptarium)
+
+    - name: Run cryptarium scan
+      id: scan
+      shell: bash
+      env:
+        CGO_ENABLED: "0"
+      run: |
+        set -euo pipefail
+        status=0
+        cryptarium scan \
+          --format "${{ inputs.format }}" \
+          --output "${{ inputs.output }}" \
+          --fail-on "${{ inputs.fail-on }}" \
+          "${{ inputs.path }}" || status=$?
+        if [[ "${{ inputs.upload-sarif }}" == "true" ]]; then
+          cryptarium scan \
+            --format sarif \
+            --output results.sarif \
+            --deterministic \
+            --fail-on none \
+            "${{ inputs.path }}"
+        fi
+        exit "$status"
+
+    - name: Upload SARIF
+      if: inputs.upload-sarif == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: results.sarif

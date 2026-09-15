@@ -12,6 +12,7 @@ import (
 	"github.com/sgoveia/cryptarium/internal/detector"
 	"github.com/sgoveia/cryptarium/internal/detector/deps"
 	"github.com/sgoveia/cryptarium/internal/model"
+	"github.com/sgoveia/cryptarium/internal/score"
 
 	// Register built-in detectors at init.
 	_ "github.com/sgoveia/cryptarium/internal/detector/certs"
@@ -32,6 +33,7 @@ type Options struct {
 type Result struct {
 	Findings []model.CryptoFinding
 	Assets   []model.CryptoAsset
+	Scored   []model.ScoredAsset
 	Warnings []string
 }
 
@@ -103,7 +105,8 @@ func Run(ctx context.Context, opt Options) (*Result, error) {
 	sortFindings(findings)
 	sort.Strings(warnings)
 	assets := classify.All(findings)
-	return &Result{Findings: findings, Assets: assets, Warnings: warnings}, nil
+	scored := score.All(assets)
+	return &Result{Findings: findings, Assets: assets, Scored: scored, Warnings: warnings}, nil
 }
 
 func activeDetectors(opt Options) []detector.Detector {

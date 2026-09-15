@@ -17,6 +17,7 @@ const (
 	FormatJSON     Format = "json"
 	FormatMarkdown Format = "markdown"
 	FormatCBOM     Format = "cbom"
+	FormatSARIF    Format = "sarif"
 )
 
 // Write emits result in the named format to w.
@@ -29,10 +30,11 @@ func Write(w io.Writer, format Format, result *pipeline.Result, meta Meta) error
 	case FormatCBOM:
 		assets := result.Assets
 		if len(assets) == 0 && result != nil {
-			// Classify on the fly if pipeline did not attach assets.
 			assets = classifyFindings(result.Findings)
 		}
 		return WriteCBOM(w, assets, meta)
+	case FormatSARIF:
+		return WriteSARIF(w, result, meta)
 	default:
 		return fmt.Errorf("unsupported format %q", format)
 	}

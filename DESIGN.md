@@ -458,7 +458,7 @@ Phase 1 first, deliberately: certificate parsing and manifest analysis are fully
 Tracked here rather than decided prematurely. An agent encountering one of these should raise it, not resolve it silently.
 
 - **`.jks` support** — pure-Go readers are thin. Ship without, or take the dependency?
-- **Confidence surfacing in SARIF** — SARIF has no native confidence field. Property bag, or fold into level?
+- **Confidence surfacing in SARIF — property bag.** SARIF has no native confidence field. Results carry `properties.confidence` (and related risk fields) rather than folding confidence into `level`, which remains reserved for priority (`critical`/`high` → error, `medium` → warning, `low` → note).
 - **`unknown` classification in the CBOM** — does emitting a component with no quantum level help consumers or pollute their inventories?
 - **Vendored dependencies** — scan `vendor/` as first-party source, or as dependencies? They are both.
 
