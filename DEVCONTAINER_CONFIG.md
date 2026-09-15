@@ -46,8 +46,8 @@ Everything needed to make a Codespace for `cryptarium` reproducible: Go toolchai
     // "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 
-  // 4 cores is the practical floor: tree-sitter builds with CGO and the
-  // collector is concurrency-heavy, so single-core timing tells you nothing.
+  // 4 cores is the practical floor: source scanning and the
+  // collector are concurrency-heavy, so single-core timing tells you nothing.
   "hostRequirements": {
     "cpus": 4,
     "memory": "8gb",
@@ -143,7 +143,8 @@ export DEBIAN_FRONTEND=noninteractive
 
 # ---------------------------------------------------------------------------
 # 1. System packages
-#    build-essential + pkg-config: tree-sitter Go bindings require CGO.
+#    build-essential + pkg-config: useful for local tooling; tree-sitter is
+#    WASM/no-CGO (DESIGN.md §17), so gcc is not required to build cryptarium.
 #    openssl + gnutls-bin: generate certificate fixtures for the certs detector.
 # ---------------------------------------------------------------------------
 log "Installing system packages"
@@ -362,7 +363,7 @@ export PATH="$HOME/.local/bin:$HOME/go/bin:/usr/local/go/bin:$PATH"
 # ---- Go --------------------------------------------------------------------
 export GOPATH="$HOME/go"
 export GOFLAGS="-buildvcs=false"
-export CGO_ENABLED=1          # tree-sitter bindings need cgo
+export CGO_ENABLED=0          # WASM tree-sitter; keep releases CGO-free (DESIGN.md §17)
 
 # ---- History ---------------------------------------------------------------
 setopt HIST_IGNORE_ALL_DUPS INC_APPEND_HISTORY SHARE_HISTORY
@@ -507,7 +508,7 @@ golangci-lint --version
 gotestsum --version
 govulncheck -version
 cyclonedx-gomod version
-gcc --version                   # CGO available for tree-sitter
+go env CGO_ENABLED              # should be 0 (WASM tree-sitter)
 openssl version                 # cert fixture generation
 echo "${CURSOR_API_KEY:0:5}"    # crsr_
 make help                       # targets listed

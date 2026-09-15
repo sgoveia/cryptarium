@@ -180,7 +180,7 @@ Detectors register themselves in an init-time registry. Adding one is a new pack
 |---|---|---|
 | `certs` | `crypto/x509` for PEM/DER; `software.sslmate.com/src/go-pkcs12` for `.p12`; SSH keys via `golang.org/x/crypto/ssh`. Extract signature algorithm, public-key algorithm, key size, curve, validity, issuer. | Java `.jks` needs a third-party reader; defer to a roadmap item rather than shipping a half-parser. **Never log or emit private key bytes** — extract metadata and discard. |
 | `deps` | Parse `go.mod`/`go.sum`, `requirements.txt`, `poetry.lock`, `package-lock.json`, `pom.xml`, `Cargo.toml` against `rules/libraries/*.yaml`. | A dependency's presence is `Confidence: medium` — a library in the graph is not proof of use. Correlation with a source finding is what raises it to high. |
-| `source` | tree-sitter parse, then match rule-pack patterns against the AST. Regex fallback when no grammar is available. | Requires CGO. Comments, string literals, and test files must be distinguishable — that distinction is what keeps the false-positive rate survivable. |
+| `source` | tree-sitter parse (WASM-hosted runtime; see §17 decision), then match rule-pack patterns against the AST. Regex fallback when no grammar is available. | Must build with `CGO_ENABLED=0` so `go install` and multi-platform releases stay simple. Comments, string literals, and test files must be distinguishable — that distinction is what keeps the false-positive rate survivable. |
 | `config` | Format-aware where possible (nginx, sshd_config, YAML, JSON, TOML); pattern matching otherwise. | Cipher-suite strings are the highest-yield target: one line can contain several primitives, each of which is a separate finding. |
 
 ## 5. Rule-pack schema
@@ -458,10 +458,13 @@ Phase 1 first, deliberately: certificate parsing and manifest analysis are fully
 Tracked here rather than decided prematurely. An agent encountering one of these should raise it, not resolve it silently.
 
 - **`.jks` support** — pure-Go readers are thin. Ship without, or take the dependency?
-- **tree-sitter binding choice** — CGO bindings cost cross-compilation simplicity, which is at odds with the single-static-binary promise. WASM-based parsing is the alternative. Decide before Phase 2.
 - **Confidence surfacing in SARIF** — SARIF has no native confidence field. Property bag, or fold into level?
 - **`unknown` classification in the CBOM** — does emitting a component with no quantum level help consumers or pollute their inventories?
 - **Vendored dependencies** — scan `vendor/` as first-party source, or as dependencies? They are both.
+
+### Decided
+
+- **tree-sitter binding — WASM (no CGO).** Chosen before Phase 2 because easy CI and `go install` / multi-platform releases are product requirements. The source detector hosts the tree-sitter runtime as WebAssembly inside the Go process (or an equivalent pure-Go WASM-capable runtime), so binaries stay `CGO_ENABLED=0`. Do **not** take CGO bindings (`smacker/go-tree-sitter` et al.) without revisiting this decision. Concrete library choice (WASM host + grammar packaging) is left to the Phase 2 spike; the constraint is no CGO at link time. Regex fallback remains for languages without a loaded grammar, at lowered confidence.
 
 ## 18. References
 
