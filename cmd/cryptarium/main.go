@@ -3,10 +3,17 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/sgoveia/cryptarium/internal/pipeline"
+	"github.com/sgoveia/cryptarium/internal/report"
+	"github.com/sgoveia/cryptarium/internal/rules"
 )
 
 // version is hardcoded for Phase 0; release builds may override later.
@@ -15,7 +22,7 @@ const version = "0.0.0-dev"
 // Exit codes per DESIGN.md §11:
 //
 //	0 — clean or below threshold
-//	1 — policy / --fail-on threshold exceeded (reserved until Phase 1+)
+//	1 — policy / --fail-on threshold exceeded (reserved until Phase 3)
 //	2 — scan error (unreadable target, invalid rules, unimplemented)
 const (
 	exitOK        = 0
@@ -49,7 +56,6 @@ func run(args []string, stdout, stderr io.Writer) int {
 }
 
 func runScan(args []string, stdout, stderr io.Writer) int {
-	_ = stdout
 	fs := newScanFlags()
 	if err := fs.parse(args); err != nil {
 		if errors.Is(err, errHelp) {
@@ -64,10 +70,100 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 		write(stderr, fs.usage())
 		return exitScanError
 	}
+	if looksLikeGitURL(fs.target) {
+		writef(stderr, "scan: remote git URLs are not supported yet; pass a local path\n")
+		return exitScanError
+	}
 
-	// Phase 0: CLI surface only. Detectors land in Phase 1.
-	writef(stderr, "cryptarium: scan is not implemented yet (phase 0 scaffold)\n")
-	return exitScanError
+	catalog, err := rules.FindDefaultCatalog()
+	if err != nil {
+		writef(stderr, "scan: %v\n", err)
+		return exitScanError
+	}
+
+	result, err := pipeline.Run(context.Background(), pipeline.Options{
+		Root:        fs.target,
+		Concurrency: fs.concurrency,
+		CatalogPath: catalog,
+	})
+	if err != nil {
+		writef(stderr, "scan: %v\n", err)
+		return exitScanError
+	}
+
+	meta := report.Meta{
+		ToolVersion:   version,
+		Root:          fs.target,
+		Deterministic: fs.deterministic,
+	}
+
+	for i, formatName := range fs.format {
+		format := report.Format(formatName)
+		out, closer, err := openOutput(fs.output, formatName, len(fs.format) > 1, i, stdout)
+		if err != nil {
+			writef(stderr, "scan: %v\n", err)
+			return exitScanError
+		}
+		if err := report.Write(out, format, result, meta); err != nil {
+			_ = closer()
+			writef(stderr, "scan: write %s: %v\n", formatName, err)
+			return exitScanError
+		}
+		if err := closer(); err != nil {
+			writef(stderr, "scan: close output: %v\n", err)
+			return exitScanError
+		}
+	}
+
+	if fs.verbose {
+		writef(stderr, "cryptarium: %d finding(s), %d warning(s)\n", len(result.Findings), len(result.Warnings))
+	}
+	return exitOK
+}
+
+func openOutput(output, format string, multi bool, index int, stdout io.Writer) (io.Writer, func() error, error) {
+	noop := func() error { return nil }
+	if output == "" || output == "-" {
+		if multi && index > 0 {
+			return nil, noop, fmt.Errorf("multiple --format values require --output directory or file path")
+		}
+		return stdout, noop, nil
+	}
+	info, err := os.Stat(output)
+	if err == nil && info.IsDir() {
+		path := filepath.Join(output, defaultFileName(format))
+		f, err := os.Create(filepath.Clean(path)) //nolint:gosec // G304: --output is an explicit user CLI path
+		if err != nil {
+			return nil, noop, err
+		}
+		return f, f.Close, nil
+	}
+	if multi {
+		return nil, noop, fmt.Errorf("multiple --format values require --output to be a directory")
+	}
+	f, err := os.Create(filepath.Clean(output)) //nolint:gosec // G304: --output is an explicit user CLI path
+	if err != nil {
+		return nil, noop, err
+	}
+	return f, f.Close, nil
+}
+
+func defaultFileName(format string) string {
+	switch format {
+	case "json":
+		return "cryptarium.json"
+	case "markdown":
+		return "CRYPTO-REPORT.md"
+	default:
+		return "cryptarium." + format
+	}
+}
+
+func looksLikeGitURL(target string) bool {
+	return strings.HasPrefix(target, "http://") ||
+		strings.HasPrefix(target, "https://") ||
+		strings.HasPrefix(target, "git@") ||
+		strings.HasPrefix(target, "ssh://")
 }
 
 func printUsage(w io.Writer) {
@@ -77,7 +173,7 @@ Usage:
   cryptarium <command> [arguments]
 
 Commands:
-  scan      Scan a repository path or git URL (not yet implemented)
+  scan      Scan a local repository path
   version   Print version
   help      Show this help
 

@@ -1,0 +1,42 @@
+package report
+
+import (
+	"fmt"
+	"io"
+
+	"github.com/sgoveia/cryptarium/internal/model"
+	"github.com/sgoveia/cryptarium/internal/pipeline"
+)
+
+// Format is a supported reporter name.
+type Format string
+
+// Known report formats for Phase 1.
+const (
+	FormatJSON     Format = "json"
+	FormatMarkdown Format = "markdown"
+)
+
+// Write emits result in the named format to w.
+func Write(w io.Writer, format Format, result *pipeline.Result, meta Meta) error {
+	switch format {
+	case FormatJSON:
+		return WriteJSON(w, result, meta)
+	case FormatMarkdown:
+		return WriteMarkdown(w, result, meta)
+	default:
+		return fmt.Errorf("unsupported format %q", format)
+	}
+}
+
+// Meta is scan metadata. Timestamps are omitted when Deterministic is true.
+type Meta struct {
+	ToolVersion   string
+	Root          string
+	Deterministic bool
+}
+
+// FindingCount is a helper for summaries.
+func FindingCount(findings []model.CryptoFinding) int {
+	return len(findings)
+}

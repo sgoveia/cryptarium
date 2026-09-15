@@ -1,3 +1,2 @@
-// Package collector walks repository trees, applies ignore rules, and
-// produces typed file references for detectors.
+// Package collector walks repository trees and produces FileRefs for detectors.
 package collector

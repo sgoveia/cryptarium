@@ -1,0 +1,48 @@
+# Known cryptographic libraries for the dependency detector.
+# Presence of a library is Confidence: medium — not proof of use.
+# See DESIGN.md §4 and §5.
+libraries:
+  - name: golang.org/x/crypto
+    ecosystem: go
+    primitives: [RSA, ECDSA, EdDSA, AES, ChaCha20, SHA-256]
+    notes: Extended Go crypto; concrete primitives depend on imported subpackages.
+    confidence: medium
+
+  - name: github.com/cloudflare/circl
+    ecosystem: go
+    primitives: [RSA, ECDSA, EdDSA, ML-KEM, ML-DSA]
+    notes: Includes post-quantum algorithms; classify individual uses when correlated with source.
+    confidence: medium
+
+  - name: github.com/ProtonMail/go-crypto
+    ecosystem: go
+    primitives: [RSA, ECDSA, EdDSA, AES]
+    notes: OpenPGP-oriented fork of golang.org/x/crypto.
+    confidence: medium
+
+  - name: github.com/ThalesIgnite/crypto11
+    ecosystem: go
+    primitives: [RSA, ECDSA, AES]
+    notes: PKCS#11 wrapper; actual primitives are runtime-selected.
+    confidence: low
+
+  - name: github.com/square/go-jose
+    ecosystem: go
+    primitives: [RSA, ECDSA, AES]
+    notes: JOSE/JWT; algorithm often selected at runtime via alg header.
+    confidence: medium
+
+  - name: gopkg.in/square/go-jose.v2
+    ecosystem: go
+    primitives: [RSA, ECDSA, AES]
+    confidence: medium
+
+  - name: github.com/go-jose/go-jose
+    ecosystem: go
+    primitives: [RSA, ECDSA, AES]
+    confidence: medium
+
+  - name: github.com/lestrrat-go/jwx
+    ecosystem: go
+    primitives: [RSA, ECDSA, EdDSA, AES]
+    confidence: medium
