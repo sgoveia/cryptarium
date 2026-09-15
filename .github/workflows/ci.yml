@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: "1.26"
+
+jobs:
+  build:
+    name: Build & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      # Phase 0: there is no Go code yet. Every step below is a no-op until
+      # go.mod exists, so CI stays green while the scaffold lands.
+      - name: Check for Go module
+        id: gomod
+        run: |
+          if [ -f go.mod ]; then echo "exists=true" >> "$GITHUB_OUTPUT";
+          else echo "exists=false" >> "$GITHUB_OUTPUT"; echo "No go.mod yet - skipping Go steps."; fi
+
+      - name: Verify formatting
+        if: steps.gomod.outputs.exists == 'true'
+        run: |
+          go install mvdan.cc/gofumpt@latest
+          test -z "$(gofumpt -l .)" || { echo "Unformatted files:"; gofumpt -l .; exit 1; }
+
+      - name: Vet
+        if: steps.gomod.outputs.exists == 'true'
+        run: go vet ./...
+
+      - name: Build
+        if: steps.gomod.outputs.exists == 'true'
+        run: go build ./...
+
+      - name: Test (race + coverage)
+        if: steps.gomod.outputs.exists == 'true'
+        run: go test -race -coverprofile=coverage.out ./...
+
+      - name: Upload coverage
+        if: steps.gomod.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+          if-no-files-found: ignore
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: golangci-lint
+        if: hashFiles('go.mod') != ''
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+  shellcheck:
+    name: Shellcheck devcontainer scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+      - run: shellcheck .devcontainer/*.sh
+
+  vuln:
+    name: govulncheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+      - name: Run govulncheck
+        if: hashFiles('go.mod') != ''
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+  # Phase 3: the tool must always scan its own repository cleanly.
+  # Enable once `cryptarium scan` and SARIF output exist.
+  #
+  # selfscan:
+  #   name: Self-scan
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     security-events: write
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-go@v5
+  #       with: { go-version: "1.26", cache: true }
+  #     - run: go run ./cmd/cryptarium scan . --format sarif --output results.sarif --deterministic
+  #     - uses: github/codeql-action/upload-sarif@v3
+  #       with:
+  #         sarif_file: results.sarif

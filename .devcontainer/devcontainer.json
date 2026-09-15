@@ -1,0 +1,90 @@
+{
+  "name": "cryptarium",
+
+  // Go 1.x on Debian bookworm. Ships git, curl, build-essential and a
+  // non-root "vscode" user. Pin the minor line for byte-identical builds:
+  // mcr.microsoft.com/devcontainers/go:1.26-bookworm
+  "image": "mcr.microsoft.com/devcontainers/go:1-bookworm",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // Node is not needed by cryptarium itself, but is needed to generate
+    // realistic package-lock.json fixtures for the dependency detector.
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
+    // Uncomment when you reach the container-image scanning roadmap item.
+    // ,"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  // 4 cores is the practical floor: tree-sitter builds with CGO and the
+  // collector is concurrency-heavy, so single-core timing tells you nothing.
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "ms-vscode.makefile-tools",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "eamodio.gitlens",
+        "github.vscode-github-actions",
+        "streetsidesoftware.code-spell-checker",
+        "bierner.markdown-mermaid"
+      ],
+      "settings": {
+        "go.toolsManagement.autoUpdate": false,
+        "go.lintTool": "golangci-lint",
+        "go.lintOnSave": "package",
+        "go.useLanguageServer": true,
+        "gopls": {
+          "ui.semanticTokens": true,
+          "formatting.gofumpt": true
+        },
+        "editor.formatOnSave": true,
+        "[go]": {
+          "editor.defaultFormatter": "golang.go",
+          "editor.codeActionsOnSave": { "source.organizeImports": "explicit" }
+        },
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.defaultProfile.linux": "zsh"
+      }
+    }
+  },
+
+  // Codespaces secrets are injected as env vars at container START.
+  // Listing them here documents the contract and makes a missing one obvious.
+  "remoteEnv": {
+    "CURSOR_API_KEY": "${localEnv:CURSOR_API_KEY}",
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin:/home/vscode/go/bin",
+    "GOFLAGS": "-buildvcs=false",
+    "CRYPTARIUM_DEV": "1"
+  },
+
+  // Persist Go module and build caches across container rebuilds.
+  "mounts": [
+    "source=cryptarium-gomod,target=/home/vscode/go/pkg/mod,type=volume",
+    "source=cryptarium-gocache,target=/home/vscode/.cache/go-build,type=volume"
+  ],
+
+  "onCreateCommand": "sudo chown -R vscode:vscode /home/vscode/go /home/vscode/.cache || true",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+
+  "remoteUser": "vscode",
+
+  "portsAttributes": {
+    "8080": { "label": "cryptarium report server", "onAutoForward": "notify" }
+  }
+}
