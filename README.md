@@ -138,7 +138,7 @@ Credibility here depends on never overstating what static discovery can prove.
 
 | Phase | Focus | Status |
 |---|---|---|
-| 0 | Scaffold: CLI skeleton, `CryptoFinding` model, CI, license | 🚧 |
+| 0 | Scaffold: CLI skeleton, `CryptoFinding` model, CI, license | ✅ |
 | 1 | Certificate/key + dependency-manifest detectors; JSON + Markdown output | ⬜ |
 | 2 | Rule-pack source detector (Go, Python, JS/TS, Java, C/C++); classifier; CBOM | ⬜ |
 | 3 | Risk scoring; SARIF; GitHub Action | ⬜ |
