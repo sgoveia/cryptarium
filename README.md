@@ -2,11 +2,11 @@
 
 **Cryptographic discovery and CBOM generation for the post-quantum transition.**
 
-[![CI](https://github.com/OWNER/cryptarium/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/cryptarium/actions/workflows/ci.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/OWNER/cryptarium.svg)](https://pkg.go.dev/github.com/OWNER/cryptarium)
+[![CI](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml/badge.svg)](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/sgoveia/cryptarium.svg)](https://pkg.go.dev/github.com/sgoveia/cryptarium)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-`cryptarium` finds where cryptography lives in a codebase — in source, dependencies, certificates, and configuration — classifies each use by its exposure to quantum attack, and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
+`cryptarium` finds where cryptography lives in a codebase in source, dependencies, certificates, and configuration classifies, each use by its exposure to quantum attack, and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
 
 Unlike single-source scanners, `cryptarium` unifies all four evidence sources in one binary and **correlates** them, so a finding is a linked picture (a dependency, the source call that uses it, the key or certificate it produces, and the configuration that exposes it) rather than four disconnected lists.
 
@@ -20,7 +20,7 @@ You cannot migrate cryptography you cannot see. Every serious post-quantum migra
 
 Two facts make this urgent rather than academic:
 
-- **Harvest-now, decrypt-later.** An adversary can capture encrypted data today and decrypt it once a cryptographically-relevant quantum computer exists. Anything that must stay confidential beyond that point is already at risk — health records, financial records, legal and government records, code-signing keys.
+- **Harvest-now, decrypt-later.** An adversary can capture encrypted data today and decrypt it once a cryptographically-relevant quantum computer exists. Anything that must stay confidential beyond that point is already at risk health records, financial records, legal and government records, code-signing keys.
 - **The replacements are standardized.** NIST finalized ML-KEM (FIPS 203), ML-DSA (FIPS 204), and SLH-DSA (FIPS 205) in 2024. The blocker is no longer which algorithm to use. It is knowing what to change.
 
 `cryptarium` treats that blocker as what it is: a code-scanning, dependency-graph, and configuration-analysis problem that should run at engineering scale and inside CI, not a manual audit.
@@ -30,7 +30,7 @@ Two facts make this urgent rather than academic:
 Pre-built binaries are not yet published. From source:
 
 ```bash
-go install github.com/OWNER/cryptarium/cmd/cryptarium@latest
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@latest
 ```
 
 Requires Go 1.26+.
@@ -177,7 +177,7 @@ Cryptographic discovery is an active field, not an empty one. CSNP's QRAMM toolk
 |---|---|
 | **Code and CI discovery** | **Own it.** The open, low-friction, multi-source crypto inventory compiler for repositories and CI. |
 | **Enterprise crypto posture** | **Integrate.** Export normalized CBOM/SARIF/JSON that those platforms and GRC systems ingest. |
-| **Runtime and network assurance** | **Roadmap.** Correlate static intent with actually-negotiated crypto rather than claiming static analysis is complete. |
+| **Runtime and network assurance** | **Roadmap.** Correlate static intent with actually-negotiated crypto rather than claiming static analysis is complete.
 
 > One open CLI and GitHub-native CI action that gives developers an auditable, correlated, PQC-migration-ready CBOM across all repository-resident crypto evidence — code, dependencies, certificates, and configuration — before it becomes an enterprise runtime problem.
 
