@@ -1,12 +1,13 @@
 # Cryptarium — GitHub Codespaces Setup Guide
 
-A step-by-step path from an empty GitHub account to a working `cryptarium` development environment in Codespaces, driven entirely from a laptop browser and a local terminal with standard git, with the Cursor CLI agent running inside the container.
+A step-by-step path to a working `cryptarium` development environment in Codespaces, starting from an existing local git repo. Everything is driven from a laptop browser and a local terminal with standard git; the Cursor CLI agent runs inside the container.
 
 **Assumptions**
 
-- All code lives in one GitHub repo: `cryptarium`.
-- The laptop is a thin client. No Go toolchain, no Cursor IDE, no build tooling installed locally. The only local requirements are a browser, `git`, and (optionally) VS Code Desktop.
+- The `cryptarium` repo already exists locally with one or more commits.
+- It does **not** yet have a GitHub remote — it is purely local.
 - No `gh` CLI is installed locally — every operation that could use it is done either through the GitHub web UI or plain `git` commands.
+- No Go toolchain, no Cursor IDE, no build tooling is needed locally. The only local requirements are a browser and `git`.
 - Development is done with the Cursor CLI (`cursor-agent`) running **inside** the Codespace, in the integrated terminal.
 
 **Time to first green build:** about 20 minutes, most of it waiting on the first container build.
@@ -20,44 +21,60 @@ A step-by-step path from an empty GitHub account to a working `cryptarium` devel
 | GitHub account with Codespaces enabled | The dev environment | Free tier includes monthly core-hours; a paid plan is worth it for a 4-core machine |
 | Cursor account with CLI access | `cursor-agent` requires a logged-in Cursor plan | https://cursor.com |
 | Cursor API key | Headless auth inside the Codespace | Cursor dashboard → Settings / API keys → create key (starts `crsr_...`) |
-| `git` on the laptop | Clone the repo and push files | Ships with macOS; `winget install Git.Git` on Windows; `apt install git` on Linux |
+| `git` on the laptop | Push the local repo to GitHub | Ships with macOS; `winget install Git.Git` on Windows; `apt install git` on Linux |
 | (Optional) VS Code Desktop + "GitHub Codespaces" extension | Nicer editor than the browser tab; same remote container | https://code.visualstudio.com |
 
 Generate the Cursor API key now and keep it on the clipboard. Step 3 consumes it.
 
 ---
 
-## Step 1 — Create the `cryptarium` repository
+## Step 1 — Create the GitHub remote and push
 
-Create the repo through the GitHub web UI:
+The local repo exists; now give it a home on GitHub. **Do not initialize the GitHub repo with a README, .gitignore, or license** — those options create an initial commit that conflicts with your existing history.
+
+**1a. Create an empty repo on GitHub**
 
 1. Go to **https://github.com/new**.
 2. Repository name: `cryptarium`.
 3. Visibility: **Public**.
-4. Check **Add a README file** (creates the initial commit so the repo is immediately cloneable).
-5. Add `.gitignore` template: **Go**.
-6. Choose a license: **Apache License 2.0** — the patent grant matters for cryptographic tooling, and it is easier to set this at creation than to add it later.
-7. Click **Create repository**.
+4. Leave **all** initialization options unchecked (no README, no .gitignore, no license).
+5. Click **Create repository**.
 
-Then clone it locally:
+GitHub will show a "Quick setup" page with the remote URL. Copy it — you need it in the next step.
 
-```bash
-git clone https://github.com/<your-username>/cryptarium.git
-cd cryptarium
-```
+**1b. Connect the remote and push**
 
-If your account uses SSH keys:
+From your local repo:
 
 ```bash
-git clone git@github.com:<your-username>/cryptarium.git
-cd cryptarium
+cd cryptarium   # wherever your local repo lives
+
+# Add the GitHub remote (pick HTTPS or SSH — use whichever matches how
+# you authenticate to GitHub on this machine)
+git remote add origin https://github.com/<your-username>/cryptarium.git
+# or SSH:
+git remote add origin git@github.com:<your-username>/cryptarium.git
+
+# Confirm the local default branch name
+git branch
+
+# Push all commits and set the upstream
+git push -u origin main
+# If your local branch is named 'master':
+# git push -u origin master
 ```
+
+Verify by refreshing the GitHub page — your commits should appear.
+
+> **On authentication.** If the HTTPS push asks for a password, GitHub no longer accepts your account password here. Use a Personal Access Token: **github.com → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token**, with `repo` scope checked. Paste it as the password when prompted. To avoid being asked again: `git config --global credential.helper store` (saves to disk) or use your OS keychain helper.
 
 ---
 
 ## Step 2 — Seed the repo with the config and docs
 
-Copy the following files into the local clone. Their contents come from the companion artifacts in this set (`DEVCONTAINER_CONFIG.md` for the `.devcontainer/` files; the `README.md`, `DESIGN.md`, and `AGENT.md` artifacts directly). The fastest path is to use `bootstrap-cryptarium.sh`, which creates every missing file in one pass — see the note at the end of this step.
+With the remote in place, add the infrastructure files that Codespaces needs. Their contents come from the companion artifacts in this set (`DEVCONTAINER_CONFIG.md` for the `.devcontainer/` files; `README.md`, `DESIGN.md`, and `AGENT.md` directly). The fastest path is `bootstrap-cryptarium.sh`, which audits the repo and creates every missing file in one pass.
+
+The full file set to land before launching a Codespace:
 
 ```
 cryptarium/
@@ -68,7 +85,7 @@ cryptarium/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
-├── .gitignore               ← already created by GitHub; replace or merge
+├── .gitignore               ← extend if it already exists
 ├── .golangci.yml
 ├── AGENT.md
 ├── AGENTS.md                ← copy of AGENT.md (Cursor auto-discovers this name)
@@ -77,14 +94,24 @@ cryptarium/
 └── README.md
 ```
 
-Make the lifecycle scripts executable before committing — git tracks the executable bit and a non-executable `post-create.sh` is the most common silent devcontainer failure:
+**Using `bootstrap-cryptarium.sh` (recommended).** Copy the script into the repo root, then:
 
 ```bash
+bash bootstrap-cryptarium.sh --check    # dry run — report what's missing
+bash bootstrap-cryptarium.sh            # create the missing files
+```
+
+The script skips files that already exist, so it is safe to run against a repo that already has some of these in place. It sets the executable bit on both lifecycle scripts and registers it with git.
+
+**Or manually**, if you prefer to place files yourself:
+
+```bash
+# After copying all files into place:
 chmod +x .devcontainer/post-create.sh .devcontainer/post-start.sh
 git update-index --chmod=+x .devcontainer/post-create.sh .devcontainer/post-start.sh
 ```
 
-Commit and push everything:
+Either way, commit and push before launching a Codespace:
 
 ```bash
 git add .
@@ -92,18 +119,7 @@ git commit -m "chore: devcontainer, CI, agent instructions, design brief"
 git push origin main
 ```
 
-> **Why this order matters.** A Codespace is created *from a commit*. If `.devcontainer/` is not pushed before you launch, GitHub uses the default universal image and none of the toolchain is installed. Push first, launch second.
-
-**Using `bootstrap-cryptarium.sh`.** The bootstrap script (also in this artifact set) audits the repo and creates every missing infrastructure file in a single run, sets executable bits, and copies `AGENT.md` to `AGENTS.md`. Run it from the repo root after copying in the three authored docs (`README.md`, `DESIGN.md`, `AGENT.md`):
-
-```bash
-# Copy bootstrap-cryptarium.sh into the repo root, then:
-bash bootstrap-cryptarium.sh --check    # dry run — report only
-bash bootstrap-cryptarium.sh            # create missing files
-git add .
-git commit -m "chore: devcontainer, CI, agent instructions, design brief"
-git push origin main
-```
+> **Why this order matters.** A Codespace is created *from a commit*. If `.devcontainer/` is not present in the pushed commit, GitHub falls back to its default universal image and none of the toolchain is installed. Push first, launch second.
 
 ---
 
