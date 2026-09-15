@@ -2,8 +2,8 @@
 
 **Cryptographic discovery and CBOM generation for the post-quantum transition.**
 
-[![CI](https://github.com/OWNER/cryptarium/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/cryptarium/actions/workflows/ci.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/OWNER/cryptarium.svg)](https://pkg.go.dev/github.com/OWNER/cryptarium)
+[![CI](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml/badge.svg)](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/sgoveia/cryptarium.svg)](https://pkg.go.dev/github.com/sgoveia/cryptarium)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 `cryptarium` finds where cryptography lives in a codebase — in source, dependencies, certificates, and configuration — classifies each use by its exposure to quantum attack, and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
@@ -30,7 +30,7 @@ Two facts make this urgent rather than academic:
 Pre-built binaries are not yet published. From source:
 
 ```bash
-go install github.com/OWNER/cryptarium/cmd/cryptarium@latest
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@latest
 ```
 
 Requires Go 1.26+.
