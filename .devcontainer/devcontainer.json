@@ -21,8 +21,8 @@
     // ,"ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
 
-  // 4 cores is the practical floor: tree-sitter builds with CGO and the
-  // collector is concurrency-heavy, so single-core timing tells you nothing.
+  // 4 cores is the practical floor: source scanning and the
+  // collector are concurrency-heavy, so single-core timing tells you nothing.
   "hostRequirements": {
     "cpus": 4,
     "memory": "8gb",

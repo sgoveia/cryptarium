@@ -10,8 +10,9 @@ export DEBIAN_FRONTEND=noninteractive
 
 # ---------------------------------------------------------------------------
 # 1. System packages
-#    build-essential + pkg-config: tree-sitter Go bindings require CGO.
-#    openssl + gnutls-bin: generate certificate fixtures for the certs detector.
+#    build-essential + pkg-config: useful for local tooling; tree-sitter
+#    parsing is WASM/no-CGO (DESIGN.md §17), so gcc is not required to build
+#    cryptarium itself. openssl + gnutls-bin: generate certificate fixtures.
 # ---------------------------------------------------------------------------
 log "Installing system packages"
 sudo apt-get update -qq

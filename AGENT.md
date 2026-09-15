@@ -87,7 +87,7 @@ Conventional Commits:
 ```
 feat(detector/certs): parse PKCS#12 bundles
 fix(score): default longevity to 50 when no signal exists
-docs(design): record tree-sitter CGO decision
+docs(design): record tree-sitter WASM (no CGO) decision
 test(rules): negative fixture for go.crypto.rsa.generatekey in comments
 chore(deps): bump cyclonedx-gomod
 ```

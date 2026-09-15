@@ -176,7 +176,7 @@ Codespaces clones the repo into `~/dotfiles` and runs `install.sh` after the con
 
 Open the repo on GitHub, click **Code ▾ → Codespaces → Create codespace on main**.
 
-On the creation dialog, click **Configure and create codespace** if you want to explicitly select the machine type. Choose **4-core** (`standardLinux32gb`): tree-sitter builds with CGO, and the fleet-scale scanning work in this project is concurrency-heavy, so you want cores to test against. 2-core works, but single-core timing is misleading. You can change the machine type later from the Codespaces page, which moves the environment onto a new VM without losing disk state.
+On the creation dialog, click **Configure and create codespace** if you want to explicitly select the machine type. Choose **4-core** (`standardLinux32gb`): Phase 2 source scanning and the fleet-scale concurrency work are CPU-heavy, so you want cores to test against. 2-core works, but single-core timing is misleading. You can change the machine type later from the Codespaces page, which moves the environment onto a new VM without losing disk state.
 
 The first build takes 3–6 minutes: GitHub pulls the base image, installs features, then runs `post-create.sh`. Watch the progress via **"Building codespace"** → **View log**. Read that log the first time — almost every setup problem is visible there in plain text.
 
@@ -300,7 +300,7 @@ Codespaces auto-forwards the port and makes a URL available under the **Ports** 
 | `cursor-agent: command not found` | Install ran before `~/.local/bin` was on `PATH`, or the install failed | `bash .devcontainer/post-create.sh` to re-run; check the creation log in the browser |
 | Cursor says "not authenticated" | `CURSOR_API_KEY` secret missing or not scoped to this repo | See Step 6; stop and restart the Codespace after fixing |
 | `devcontainer.json` edits have no effect | Config is only read at container create/rebuild | Command palette → *Codespaces: Rebuild Container* |
-| CGO / tree-sitter build failure | Missing `build-essential` | Installed by `post-create.sh`; confirm with `gcc --version` |
+| Build fails without C compiler | Unexpected `CGO_ENABLED=1` or native deps | cryptarium itself is `CGO_ENABLED=0` (WASM tree-sitter). Confirm with `go env CGO_ENABLED`. `gcc` is only needed for optional local tooling / regenerating cert fixtures via openssl. |
 | `git push` asks for credentials | HTTPS remote without a credential helper | Set up a [Personal Access Token](https://github.com/settings/tokens) with `repo` scope and use it as the password, or switch the remote to SSH: `git remote set-url origin git@github.com:<user>/cryptarium.git` |
 | `git push` rejected after adding a workflow file | Codespaces built-in token lacks `workflow` scope | Add a PAT with `repo` + `workflow` scopes and use it for this push, or push the workflow file from your local machine |
 | Post-create script changes have no effect | `post-create.sh` only runs on create/rebuild, not on start | Run it manually: `bash .devcontainer/post-create.sh` |
