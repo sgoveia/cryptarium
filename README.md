@@ -6,7 +6,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/sgoveia/cryptarium.svg)](https://pkg.go.dev/github.com/sgoveia/cryptarium)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-`cryptarium` finds where cryptography lives in a codebase in source, dependencies, certificates, and configuration classifies each use by its exposure to quantum attack, and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
+`cryptarium` finds where cryptography lives in a codebase in source, dependencies, certificates, and configuration classifies, each use by its exposure to quantum attack, and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
 
 Unlike single-source scanners, `cryptarium` unifies all four evidence sources in one binary and **correlates** them, so a finding is a linked picture (a dependency, the source call that uses it, the key or certificate it produces, and the configuration that exposes it) rather than four disconnected lists.
 
