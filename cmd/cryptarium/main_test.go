@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -20,14 +21,21 @@ func TestRun_Version(t *testing.T) {
 	}
 }
 
-func TestRun_ScanNotImplemented(t *testing.T) {
-	var stdout, stderr bytes.Buffer
-	code := run([]string{"scan", "."}, &stdout, &stderr)
-	if code != exitScanError {
-		t.Fatalf("exit = %d, want %d", code, exitScanError)
+func TestRun_ScanFixture(t *testing.T) {
+	root := filepath.Join("..", "..", "testdata", "fixture-repo")
+	if _, err := os.Stat(root); err != nil {
+		t.Fatalf("fixture-repo missing: %v", err)
 	}
-	if !strings.Contains(stderr.String(), "not implemented") {
-		t.Fatalf("stderr = %q, want not-implemented message", stderr.String())
+	var stdout, stderr bytes.Buffer
+	code := run([]string{"scan", "--format", "json", "--deterministic", root}, &stdout, &stderr)
+	if code != exitOK {
+		t.Fatalf("exit = %d; stderr=%q", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), `"findings"`) {
+		t.Fatalf("expected JSON findings, got %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "RSA") && !strings.Contains(stdout.String(), "ECDSA") {
+		t.Fatalf("expected cert primitive in output: %s", stdout.String())
 	}
 }
 
@@ -36,6 +44,17 @@ func TestRun_ScanMissingTarget(t *testing.T) {
 	code := run([]string{"scan"}, &stdout, &stderr)
 	if code != exitScanError {
 		t.Fatalf("exit = %d, want %d", code, exitScanError)
+	}
+}
+
+func TestRun_ScanGitURLRejected(t *testing.T) {
+	var stdout, stderr bytes.Buffer
+	code := run([]string{"scan", "https://github.com/example/repo"}, &stdout, &stderr)
+	if code != exitScanError {
+		t.Fatalf("exit = %d", code)
+	}
+	if !strings.Contains(stderr.String(), "not supported") {
+		t.Fatalf("stderr=%q", stderr.String())
 	}
 }
 

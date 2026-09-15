@@ -67,7 +67,7 @@ func (s *scanFlags) parse(args []string) error {
 
 func (s *scanFlags) usage() string {
 	var b strings.Builder
-	b.WriteString("Usage:\n  cryptarium scan <path|git-url> [flags]\n\nFlags:\n")
+	b.WriteString("Usage:\n  cryptarium scan [flags] <path>\n\nFlags:\n")
 	s.fs.SetOutput(&b)
 	s.fs.PrintDefaults()
 	return b.String()
