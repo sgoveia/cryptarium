@@ -17,6 +17,7 @@ type Evidence struct {
 // SourceKind identifies which detector family produced the evidence.
 type SourceKind string
 
+// Known SourceKind values.
 const (
 	SourceCode          SourceKind = "source-code"
 	SourceDependency    SourceKind = "dependency"
@@ -27,6 +28,7 @@ const (
 // Confidence is how strongly the match establishes the primitive and parameters.
 type Confidence string
 
+// Known Confidence values.
 const (
 	ConfidenceHigh   Confidence = "high"
 	ConfidenceMedium Confidence = "medium"
@@ -36,6 +38,7 @@ const (
 // AssetType is the CycloneDX-aligned category of a cryptographic asset.
 type AssetType string
 
+// Known AssetType values.
 const (
 	AssetAlgorithm   AssetType = "algorithm"
 	AssetCertificate AssetType = "certificate"
@@ -47,6 +50,7 @@ const (
 // CryptoFunction is a cryptographic operation the asset participates in.
 type CryptoFunction string
 
+// Known CryptoFunction values.
 const (
 	FunctionKeygen      CryptoFunction = "keygen"
 	FunctionEncrypt     CryptoFunction = "encrypt"
@@ -80,6 +84,7 @@ type CryptoAsset struct {
 // QuantumClass is the quantum-vulnerability classification of an asset.
 type QuantumClass string
 
+// Known QuantumClass values.
 const (
 	ClassBroken   QuantumClass = "broken"   // Shor: RSA, DH, ECDH, ECDSA, EdDSA, DSA
 	ClassWeakened QuantumClass = "weakened" // Grover: symmetric ciphers and hashes below target margin
@@ -115,6 +120,7 @@ type RiskScore struct {
 // Priority is the band derived from RiskScore.Score.
 type Priority string
 
+// Known Priority bands derived from RiskScore.Score.
 const (
 	PriorityCritical Priority = "critical" // >= 80
 	PriorityHigh     Priority = "high"     // >= 60

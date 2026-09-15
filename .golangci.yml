@@ -1,0 +1,37 @@
+version: "2"
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - bodyclose
+    - errorlint
+    - gosec
+    - misspell
+    - revive
+    - unconvert
+    - wastedassign
+  settings:
+    errorlint:
+      errorf: true
+    gosec:
+      # G101/G404 fire constantly in a crypto-inventory tool whose testdata is
+      # deliberately weak key material. Excluded only under testdata/ below.
+      excludes: []
+    revive:
+      rules:
+        - name: exported
+          severity: warning
+  exclusions:
+    rules:
+      - path: testdata/
+        linters: [gosec, errcheck, revive]
+      - path: _test\.go
+        linters: [gosec]
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

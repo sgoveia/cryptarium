@@ -73,9 +73,10 @@ jobs:
           cache: true
       - name: golangci-lint
         if: hashFiles('go.mod') != ''
-        uses: golangci/golangci-lint-action@v6
+        # Action v8+ installs golangci-lint v2, required for Go 1.26+ (v6 shipped v1).
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: latest
+          version: v2.13.2
 
   shellcheck:
     name: Shellcheck devcontainer scripts
