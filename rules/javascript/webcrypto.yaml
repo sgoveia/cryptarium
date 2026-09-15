@@ -1,0 +1,29 @@
+id: javascript-webcrypto
+version: 1
+language: javascript
+description: Web Crypto and Node crypto patterns in JavaScript/TypeScript.
+
+rules:
+  - id: js.crypto.createcipheriv.aes
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: crypto
+      symbol: createCipheriv
+    references:
+      - "https://nodejs.org/api/crypto.html#cryptocreatecipherivalgorithm-key-iv-options"
+
+  - id: js.subtle.generatekey
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [keygen]
+    confidence: low
+    match:
+      kind: call
+      package: crypto.subtle
+      symbol: generateKey
+    references:
+      - "https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey"

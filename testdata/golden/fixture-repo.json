@@ -68,6 +68,26 @@
         "ruleId": "deps.go.golang.org.x.crypto",
         "confidence": "medium"
       }
+    },
+    {
+      "id": "6a7820e687f0d837",
+      "assetType": "algorithm",
+      "primitive": "RSA",
+      "parameters": {
+        "keySize": 2048
+      },
+      "functions": [
+        "keygen"
+      ],
+      "evidence": {
+        "source": "source-code",
+        "path": "token.go",
+        "line": 9,
+        "column": 2,
+        "snippet": "rsa.GenerateKey(rand.Reader, 2048)",
+        "ruleId": "go.crypto.rsa.generatekey",
+        "confidence": "high"
+      }
     }
   ]
 }

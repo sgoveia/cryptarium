@@ -47,6 +47,7 @@ func scanFixture(t *testing.T) *pipeline.Result {
 	result, err := pipeline.Run(t.Context(), pipeline.Options{
 		Root:        root,
 		CatalogPath: catalog,
+		RulesDir:    filepath.Join("..", "..", "rules"),
 		Concurrency: 1,
 	})
 	if err != nil {

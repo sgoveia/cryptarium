@@ -28,7 +28,10 @@ golden: ## Regenerate golden files (review the diff)
 
 check: fmt lint test ## Everything CI runs
 
+lint-rules: ## Validate rule packs load and IDs are unique
+	go test ./internal/rules/ -run 'TestLoadAllRulePacks|TestRuleFixturesExist' -count=1
+
 clean:
 	rm -rf bin coverage.out
 
-.PHONY: help build test lint fmt vuln selfscan golden check clean
+.PHONY: help build test lint fmt vuln selfscan golden check clean lint-rules

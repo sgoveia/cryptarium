@@ -80,11 +80,17 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 		writef(stderr, "scan: %v\n", err)
 		return exitScanError
 	}
+	rulesDir, err := rules.FindDefaultRulesDir()
+	if err != nil {
+		writef(stderr, "scan: %v\n", err)
+		return exitScanError
+	}
 
 	result, err := pipeline.Run(context.Background(), pipeline.Options{
 		Root:        fs.target,
 		Concurrency: fs.concurrency,
 		CatalogPath: catalog,
+		RulesDir:    rulesDir,
 	})
 	if err != nil {
 		writef(stderr, "scan: %v\n", err)
@@ -154,6 +160,8 @@ func defaultFileName(format string) string {
 		return "cryptarium.json"
 	case "markdown":
 		return "CRYPTO-REPORT.md"
+	case "cbom":
+		return "cbom.json"
 	default:
 		return "cryptarium." + format
 	}

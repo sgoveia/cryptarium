@@ -464,7 +464,7 @@ Tracked here rather than decided prematurely. An agent encountering one of these
 
 ### Decided
 
-- **tree-sitter binding — WASM (no CGO).** Chosen before Phase 2 because easy CI and `go install` / multi-platform releases are product requirements. The source detector hosts the tree-sitter runtime as WebAssembly inside the Go process (or an equivalent pure-Go WASM-capable runtime), so binaries stay `CGO_ENABLED=0`. Do **not** take CGO bindings (`smacker/go-tree-sitter` et al.) without revisiting this decision. Concrete library choice (WASM host + grammar packaging) is left to the Phase 2 spike; the constraint is no CGO at link time. Regex fallback remains for languages without a loaded grammar, at lowered confidence.
+- **tree-sitter binding — WASM / no-CGO.** Chosen before Phase 2 because easy CI and `go install` / multi-platform releases are product requirements. **Locked implementation:** [`github.com/odvcencio/gotreesitter`](https://github.com/odvcencio/gotreesitter) (Apache-2.0 / see module license) — a pure-Go tree-sitter runtime that embeds grammar blobs and satisfies `CGO_ENABLED=0`. A bake-off against `github.com/malivvan/tree-sitter` (wazero + official WASM) found that module only ships C/C++ grammars today, so it could not parse Go. Do **not** take CGO bindings (`smacker/go-tree-sitter` et al.) without revisiting this decision. Regex fallback remains for languages without a loaded grammar, at lowered confidence.
 
 ## 18. References
 

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sgoveia/cryptarium/rules/schema.json",
+  "title": "cryptarium rule pack",
+  "type": "object",
+  "required": ["id", "version", "language", "rules"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "version": { "type": "integer", "minimum": 1 },
+    "language": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "primitive", "match"],
+        "properties": {
+          "id": { "type": "string" },
+          "primitive": { "type": "string" },
+          "assetType": { "type": "string" },
+          "functions": { "type": "array", "items": { "type": "string" } },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+          "match": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {
+              "kind": { "type": "string", "enum": ["call", "identifier"] },
+              "package": { "type": "string" },
+              "symbol": { "type": "string" },
+              "pattern": { "type": "string" }
+            }
+          },
+          "parameters": { "type": "object" },
+          "references": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

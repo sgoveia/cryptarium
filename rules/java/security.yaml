@@ -1,0 +1,39 @@
+id: java-security
+version: 1
+language: java
+description: Java security and javax.crypto primitives.
+
+rules:
+  - id: java.security.keypairgenerator.getinstance
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: call
+      package: java.security.KeyPairGenerator
+      symbol: getInstance
+    parameters:
+      algorithm:
+        from: argument
+        index: 0
+        type: string
+    references:
+      - "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/security/KeyPairGenerator.html"
+
+  - id: java.crypto.cipher.getinstance
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: javax.crypto.Cipher
+      symbol: getInstance
+    parameters:
+      transformation:
+        from: argument
+        index: 0
+        type: string
+    references:
+      - "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/javax/crypto/Cipher.html"
