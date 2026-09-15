@@ -1,0 +1,48 @@
+# Go standard library cryptographic primitives.
+id: go-stdlib-crypto
+version: 1
+language: go
+description: Go standard library cryptographic primitives.
+
+rules:
+  - id: go.crypto.rsa.generatekey
+    primitive: RSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: crypto/rsa
+      symbol: GenerateKey
+    parameters:
+      keySize:
+        from: argument
+        index: 1
+        type: int
+    references:
+      - "https://pkg.go.dev/crypto/rsa#GenerateKey"
+
+  - id: go.crypto.ecdsa.generatekey
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: crypto/ecdsa
+      symbol: GenerateKey
+    references:
+      - "https://pkg.go.dev/crypto/ecdsa#GenerateKey"
+
+  - id: go.crypto.tls.ciphersuite.aes128
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'TLS_.*_WITH_AES_128_.*'
+    parameters:
+      keySize: { value: 128 }
+    references:
+      - "https://pkg.go.dev/crypto/tls"

@@ -1,0 +1,34 @@
+id: python-cryptography
+version: 1
+language: python
+description: Python cryptography library and hashlib primitives.
+
+rules:
+  - id: python.cryptography.rsa.generate_private_key
+    primitive: RSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: cryptography.hazmat.primitives.asymmetric.rsa
+      symbol: generate_private_key
+    parameters:
+      keySize:
+        from: keyword
+        name: key_size
+        type: int
+    references:
+      - "https://cryptography.io/en/latest/hazmat/primitives/asymmetric/rsa/"
+
+  - id: python.hashlib.md5
+    primitive: MD5
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: hashlib
+      symbol: md5
+    references:
+      - "https://docs.python.org/3/library/hashlib.html"

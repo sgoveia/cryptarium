@@ -1,0 +1,29 @@
+id: c-openssl
+version: 1
+language: c
+description: OpenSSL and common C cryptographic API calls.
+
+rules:
+  - id: c.openssl.rsa_generate_key_ex
+    primitive: RSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_generate_key_ex
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_generate_key.html"
+
+  - id: c.openssl.evp_pkey_keygen
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_PKEY_keygen
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_keygen.html"

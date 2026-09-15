@@ -50,6 +50,12 @@ jobs:
         if: steps.gomod.outputs.exists == 'true'
         run: go build ./...
 
+      - name: Build without CGO
+        if: steps.gomod.outputs.exists == 'true'
+        env:
+          CGO_ENABLED: "0"
+        run: go build ./...
+
       - name: Test (race + coverage)
         if: steps.gomod.outputs.exists == 'true'
         run: go test -race -coverprofile=coverage.out ./...
