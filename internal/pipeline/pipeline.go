@@ -7,8 +7,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/sgoveia/cryptarium/internal/classify"
 	"github.com/sgoveia/cryptarium/internal/collector"
+	"github.com/sgoveia/cryptarium/internal/correlate"
 	"github.com/sgoveia/cryptarium/internal/detector"
 	"github.com/sgoveia/cryptarium/internal/detector/deps"
 	"github.com/sgoveia/cryptarium/internal/model"
@@ -105,7 +105,7 @@ func Run(ctx context.Context, opt Options) (*Result, error) {
 
 	sortFindings(findings)
 	sort.Strings(warnings)
-	assets := classify.All(findings)
+	assets := correlate.AllLinks(findings)
 	scored := score.All(assets)
 	return &Result{Findings: findings, Assets: assets, Scored: scored, Warnings: warnings}, nil
 }
