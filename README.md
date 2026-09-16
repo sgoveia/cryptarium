@@ -29,7 +29,7 @@ Two facts make this urgent rather than academic:
 
 ```bash
 # Go 1.26+
-go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.0
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.1
 ```
 
 Pre-built binaries (linux/darwin/windows, amd64/arm64) are attached to [GitHub Releases](https://github.com/sgoveia/cryptarium/releases).
@@ -76,7 +76,7 @@ Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
 ### GitHub Action
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.1.0
+- uses: sgoveia/cryptarium@v0.1.1
   with:
     path: .
     fail-on: critical
