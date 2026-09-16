@@ -5,8 +5,8 @@ PKG := ./...
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "};{printf "  \033[36m%-14s\033[0m %s\n",$$1,$$2}'
 
-build: ## Build the CLI
-	go build -o bin/$(BIN) ./cmd/$(BIN)
+build: ## Build the CLI (VERSION=v0.1.0 to stamp release version)
+	go build -ldflags "-X main.version=$(or $(VERSION),0.0.0-dev)" -o bin/$(BIN) ./cmd/$(BIN)
 
 test: ## Run tests with race detector
 	gotestsum --format testname -- -race -coverprofile=coverage.out $(PKG)

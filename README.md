@@ -10,7 +10,7 @@
 
 Unlike single-source scanners, `cryptarium` unifies all four evidence sources in one binary and **correlates** them, so a finding is a linked picture (a dependency, the source call that uses it, the key or certificate it produces, and the configuration that exposes it) rather than four disconnected lists.
 
-> **Status: pre-alpha.** v0.1 is under active development. Interfaces, output schemas, and rule-pack format will change. See [DESIGN.md](DESIGN.md) for the full architecture and [the build plan](#build-plan) for where things stand.
+> **Status: v0.1 inventory complete.** Core detectors, correlation, scoring, CBOM/SARIF, and the GitHub Action ship on tagged releases. Interfaces may still evolve before 1.0. See [DESIGN.md](DESIGN.md) for architecture and [the build plan](#build-plan) for roadmap items.
 
 ---
 
@@ -27,13 +27,12 @@ Two facts make this urgent rather than academic:
 
 ## Install
 
-Pre-built binaries are not yet published. From source:
-
 ```bash
-go install github.com/sgoveia/cryptarium/cmd/cryptarium@latest
+# Go 1.26+
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.0
 ```
 
-Requires Go 1.26+.
+Pre-built binaries (linux/darwin/windows, amd64/arm64) are attached to [GitHub Releases](https://github.com/sgoveia/cryptarium/releases).
 
 ## Usage
 
@@ -77,7 +76,7 @@ Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
 ### GitHub Action
 
 ```yaml
-- uses: sgoveia/cryptarium@main
+- uses: sgoveia/cryptarium@v0.1.0
   with:
     path: .
     fail-on: critical

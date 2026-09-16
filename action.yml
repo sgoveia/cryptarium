@@ -33,14 +33,18 @@ runs:
         go-version: "1.26"
         cache: true
 
-    - name: Install cryptarium from action ref
+    - name: Install cryptarium
       shell: bash
       env:
         CGO_ENABLED: "0"
       run: |
         set -euo pipefail
-        go install "${GITHUB_ACTION_PATH}/cmd/cryptarium@${GITHUB_ACTION_REF}" 2>/dev/null \
-          || (cd "${GITHUB_ACTION_PATH}" && go install ./cmd/cryptarium)
+        ref="${GITHUB_ACTION_REF:-}"
+        if [[ "$ref" == v* ]]; then
+          go install "github.com/sgoveia/cryptarium/cmd/cryptarium@${ref}"
+        else
+          (cd "${GITHUB_ACTION_PATH}" && go install ./cmd/cryptarium)
+        fi
 
     - name: Run cryptarium scan
       id: scan
