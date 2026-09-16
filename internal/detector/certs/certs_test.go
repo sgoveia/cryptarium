@@ -19,6 +19,8 @@ import (
 	"github.com/sgoveia/cryptarium/internal/collector"
 	"github.com/sgoveia/cryptarium/internal/detector/certs"
 	"github.com/sgoveia/cryptarium/internal/model"
+
+	"software.sslmate.com/src/go-pkcs12"
 )
 
 func TestHandles(t *testing.T) {
@@ -32,6 +34,8 @@ func TestHandles(t *testing.T) {
 		{"a.cer", true},
 		{"a.der", true},
 		{"a.key", true},
+		{"a.p12", true},
+		{"a.pfx", true},
 		{"a.go", false},
 		{"readme.txt", false},
 	}
@@ -188,6 +192,93 @@ func TestDetect_SyntheticECDSA(t *testing.T) {
 	}
 	if findings[0].Parameters["curve"] != "P-256" {
 		t.Fatalf("curve=%v", findings[0].Parameters["curve"])
+	}
+}
+
+func TestDetect_PKCS12RSA(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "rsa.p12")
+
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tmpl := &x509.Certificate{
+		SerialNumber: big.NewInt(2),
+		NotBefore:    time.Now().Add(-time.Hour),
+		NotAfter:     time.Now().Add(time.Hour),
+	}
+	der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, &key.PublicKey, key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cert, err := x509.ParseCertificate(der)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pfx, err := pkcs12.Modern.Encode(key, cert, nil, pkcs12.DefaultPassword)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, pfx, 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	findings, err := certs.New().Detect(context.Background(), collector.FileRef{Path: "rsa.p12", AbsPath: path})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(findings) < 1 {
+		t.Fatalf("expected PKCS#12 findings, got %d", len(findings))
+	}
+	foundRSA := false
+	for _, f := range findings {
+		assertNoKeyMaterial(t, f)
+		if f.Primitive == "RSA" {
+			foundRSA = true
+			if f.Parameters["keySize"] != 2048 {
+				t.Fatalf("keySize=%v", f.Parameters["keySize"])
+			}
+		}
+	}
+	if !foundRSA {
+		t.Fatalf("no RSA finding: %+v", findings)
+	}
+}
+
+func TestDetect_PKCS12WrongPassword(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "locked.p12")
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tmpl := &x509.Certificate{
+		SerialNumber: big.NewInt(3),
+		NotBefore:    time.Now().Add(-time.Hour),
+		NotAfter:     time.Now().Add(time.Hour),
+	}
+	der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, &key.PublicKey, key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cert, err := x509.ParseCertificate(der)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pfx, err := pkcs12.Modern.Encode(key, cert, nil, "not-the-default-password")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, pfx, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	findings, err := certs.New().Detect(context.Background(), collector.FileRef{Path: "locked.p12", AbsPath: path})
+	if err == nil {
+		t.Fatal("expected decrypt error for unknown password")
+	}
+	if len(findings) != 0 {
+		t.Fatalf("expected no findings on decrypt failure, got %+v", findings)
 	}
 }
 
