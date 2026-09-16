@@ -60,32 +60,28 @@ cryptarium scan . --fail-on critical
 ### Example output
 
 ```
-cryptarium v0.1.0 — scanned 1,284 files in 2.1s
+# cryptarium report
 
-CRITICAL  services/auth/token.go:88         RSA-2048 key generation
-          → broken by Shor; internet-facing; migrate to ML-DSA (FIPS 204)
-          → correlated: go.mod crypto/rsa · certs/api.pem (RSA-2048 sig)
+Tool: cryptarium 0.0.0-dev
 
-HIGH      config/nginx.conf:41              TLS_ECDHE_RSA_WITH_AES_128_GCM
-          → ECDHE broken by Shor, AES-128 weakened by Grover
-          → migrate to hybrid X25519+ML-KEM-768; raise to AES-256
+Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
 
-MEDIUM    internal/store/encrypt.go:23      AES-128-GCM at rest
-          → weakened by Grover; 7-year retention → HNDL exposure
-
-  4 critical · 11 high · 23 medium · 6 low          CBOM: cbom.json
+| Priority | Class | Location | Primitive | Recommendation |
+|---|---|---|---|---|
+| critical (83) | broken | `certs/ecdsa-p256.pem` | ECDSA | ML-DSA-65 (FIPS 204) |
+| critical (83) | broken | `certs/rsa2048.pem` | RSA | ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204) |
+| high (70) | broken | `go.mod:6` | RSA | ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204) |
+| high (78) | broken | `token.go:9` | RSA | ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204) |
 ```
 
 ### GitHub Action
 
 ```yaml
-- uses: OWNER/cryptarium-action@v0
+- uses: sgoveia/cryptarium@main
   with:
     path: .
     fail-on: critical
-- uses: github/codeql-action/upload-sarif@v3
-  with:
-    sarif_file: results.sarif
+    upload-sarif: true
 ```
 
 ## What it detects
@@ -141,7 +137,7 @@ Credibility here depends on never overstating what static discovery can prove.
 | 0 | Scaffold: CLI skeleton, `CryptoFinding` model, CI, license | ✅ |
 | 1 | Certificate/key + dependency-manifest detectors; JSON + Markdown output | ✅ |
 | 2 | Rule-pack source detector (Go, Python, JS/TS, Java, C/C++; tree-sitter via gotreesitter / no CGO); classifier; CBOM | ✅ |
-| 3 | Risk scoring; SARIF; GitHub Action | ⬜ |
+| 3 | Risk scoring; SARIF; GitHub Action | ✅ |
 | 4 | AI-assisted triage; multi-repo scanning; container images | ⬜ |
 
 Longer roadmap: container and filesystem scanning, runtime/network discovery, binary and firmware analysis, org-wide aggregation, cloud KMS/HSM discovery, a full declarative policy engine with migration-exception tracking, and export to GitLab CI, Jenkins, SonarQube, Dependency-Track, SIEM, and GRC destinations.

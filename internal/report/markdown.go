@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/sgoveia/cryptarium/internal/model"
 	"github.com/sgoveia/cryptarium/internal/pipeline"
 )
 
@@ -19,7 +20,14 @@ func WriteMarkdown(w io.Writer, result *pipeline.Result, meta Meta) error {
 	if !meta.Deterministic && meta.Root != "" {
 		fmt.Fprintf(&b, "Target: `%s`\n\n", meta.Root)
 	}
+
+	counts := priorityCounts(result.Scored)
 	fmt.Fprintf(&b, "Findings: **%d**", len(result.Findings))
+	if len(result.Scored) > 0 {
+		fmt.Fprintf(&b, " · %d critical · %d high · %d medium · %d low",
+			counts[model.PriorityCritical], counts[model.PriorityHigh],
+			counts[model.PriorityMedium], counts[model.PriorityLow])
+	}
 	if len(result.Warnings) > 0 {
 		fmt.Fprintf(&b, " · Warnings: **%d**", len(result.Warnings))
 	}
@@ -27,6 +35,24 @@ func WriteMarkdown(w io.Writer, result *pipeline.Result, meta Meta) error {
 
 	if len(result.Findings) == 0 {
 		b.WriteString("No cryptographic assets detected in scanned files.\n")
+	} else if len(result.Scored) > 0 {
+		b.WriteString("| Priority | Class | Location | Primitive | Recommendation |\n")
+		b.WriteString("|---|---|---|---|---|\n")
+		for _, s := range result.Scored {
+			loc := s.Evidence.Path
+			if s.Evidence.Line > 0 {
+				loc = fmt.Sprintf("%s:%d", s.Evidence.Path, s.Evidence.Line)
+			}
+			rec := s.Recommendation.Target
+			if s.Recommendation.Standard != "" {
+				rec = fmt.Sprintf("%s (%s)", s.Recommendation.Target, s.Recommendation.Standard)
+			}
+			rec = strings.ReplaceAll(rec, "|", "\\|")
+			fmt.Fprintf(&b, "| %s (%d) | %s | `%s` | %s | %s |\n",
+				s.Risk.Priority, s.Risk.Score, s.QuantumClass, loc, s.Primitive, rec)
+		}
+		b.WriteString("\n")
+		b.WriteString("Scores use vulnerability, longevity, exposure, and agility heuristics (DESIGN.md §7).\n")
 	} else {
 		b.WriteString("| Class | Location | Primitive | Evidence |\n")
 		b.WriteString("|---|---|---|---|\n")
@@ -36,19 +62,12 @@ func WriteMarkdown(w io.Writer, result *pipeline.Result, meta Meta) error {
 				loc = fmt.Sprintf("%s:%d", f.Evidence.Path, f.Evidence.Line)
 			}
 			snippet := strings.ReplaceAll(f.Evidence.Snippet, "|", "\\|")
-			class := string(f.Evidence.Confidence) + " · " + string(f.Evidence.Source)
-			if result != nil && i < len(result.Assets) {
+			class := string(f.Evidence.Confidence)
+			if i < len(result.Assets) {
 				class = string(result.Assets[i].QuantumClass)
 			}
-			fmt.Fprintf(&b, "| %s | `%s` | %s | %s |\n",
-				class,
-				loc,
-				f.Primitive,
-				snippet,
-			)
+			fmt.Fprintf(&b, "| %s | `%s` | %s | %s |\n", class, loc, f.Primitive, snippet)
 		}
-		b.WriteString("\n")
-		b.WriteString("Confidence reflects detection strength only. Classification and risk scoring land in later phases.\n")
 	}
 
 	if len(result.Warnings) > 0 {
@@ -60,4 +79,12 @@ func WriteMarkdown(w io.Writer, result *pipeline.Result, meta Meta) error {
 
 	_, err := io.WriteString(w, b.String())
 	return err
+}
+
+func priorityCounts(scored []model.ScoredAsset) map[model.Priority]int {
+	m := map[model.Priority]int{}
+	for _, s := range scored {
+		m[s.Risk.Priority]++
+	}
+	return m
 }

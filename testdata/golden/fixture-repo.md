@@ -2,13 +2,13 @@
 
 Tool: cryptarium 0.0.0-dev
 
-Findings: **4**
+Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
 
-| Class | Location | Primitive | Evidence |
-|---|---|---|---|
-| broken | `certs/ecdsa-p256.pem` | ECDSA | x509 certificate CN=cryptarium-fixture-p256; ECDSA P-256 |
-| broken | `certs/rsa2048.pem` | RSA | x509 certificate CN=cryptarium-fixture-rsa2048; RSA-2048 |
-| broken | `go.mod:6` | RSA | require golang.org/x/crypto v0.31.0 |
-| broken | `token.go:9` | RSA | rsa.GenerateKey(rand.Reader, 2048) |
+| Priority | Class | Location | Primitive | Recommendation |
+|---|---|---|---|---|
+| critical (83) | broken | `certs/ecdsa-p256.pem` | ECDSA | ML-DSA-65 (FIPS 204) |
+| critical (83) | broken | `certs/rsa2048.pem` | RSA | ML-KEM-768 (key establishment) / ML-DSA-65 (signatures) (FIPS 203 / FIPS 204) |
+| high (70) | broken | `go.mod:6` | RSA | ML-KEM-768 (key establishment) / ML-DSA-65 (signatures) (FIPS 203 / FIPS 204) |
+| high (78) | broken | `token.go:9` | RSA | ML-KEM-768 (key establishment) / ML-DSA-65 (signatures) (FIPS 203 / FIPS 204) |
 
-Confidence reflects detection strength only. Classification and risk scoring land in later phases.
+Scores use vulnerability, longevity, exposure, and agility heuristics (DESIGN.md §7).

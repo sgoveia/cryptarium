@@ -12,10 +12,11 @@ type jsonDocument struct {
 	ToolVersion string                `json:"toolVersion"`
 	Root        string                `json:"root,omitempty"`
 	Findings    []model.CryptoFinding `json:"findings"`
+	Scored      []model.ScoredAsset   `json:"scored,omitempty"`
 	Warnings    []string              `json:"warnings,omitempty"`
 }
 
-// WriteJSON emits a deterministic JSON document of findings.
+// WriteJSON emits a deterministic JSON document of findings (and scores when present).
 func WriteJSON(w io.Writer, result *pipeline.Result, meta Meta) error {
 	if result == nil {
 		result = &pipeline.Result{}
@@ -23,6 +24,7 @@ func WriteJSON(w io.Writer, result *pipeline.Result, meta Meta) error {
 	doc := jsonDocument{
 		ToolVersion: meta.ToolVersion,
 		Findings:    result.Findings,
+		Scored:      result.Scored,
 		Warnings:    result.Warnings,
 	}
 	if !meta.Deterministic {

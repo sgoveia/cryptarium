@@ -89,5 +89,166 @@
         "confidence": "high"
       }
     }
+  ],
+  "scored": [
+    {
+      "id": "39ed9c70debaae6e",
+      "assetType": "certificate",
+      "primitive": "ECDSA",
+      "parameters": {
+        "curve": "P-256",
+        "keySize": 256,
+        "signatureAlgorithm": "ECDSA-SHA256",
+        "subjectCN": "cryptarium-fixture-p256"
+      },
+      "functions": [
+        "verify"
+      ],
+      "evidence": {
+        "source": "certificate",
+        "path": "certs/ecdsa-p256.pem",
+        "snippet": "x509 certificate CN=cryptarium-fixture-p256; ECDSA P-256",
+        "ruleId": "certs.x509.certificate",
+        "confidence": "high"
+      },
+      "quantumClass": "broken",
+      "rationale": "elliptic-curve discrete log; broken by Shor's algorithm",
+      "recommendation": {
+        "target": "ML-DSA-65",
+        "standard": "FIPS 204",
+        "notes": "SLH-DSA (FIPS 205) where a conservative hash-based option is preferred"
+      },
+      "relatedIds": null,
+      "risk": {
+        "score": 83,
+        "priority": "critical",
+        "vulnerability": 100,
+        "longevity": 75,
+        "exposure": 70,
+        "agility": 70,
+        "explanation": "score=83 (critical): vulnerability=100 (quantumClass=broken); longevity=75 (certificate asset; long-lived trust anchor heuristic); exposure=70 (certificate in repo; often production-facing); agility=70 (cert/config binding; limited agility heuristic)"
+      }
+    },
+    {
+      "id": "3ba62163d0ebd886",
+      "assetType": "certificate",
+      "primitive": "RSA",
+      "parameters": {
+        "keySize": 2048,
+        "signatureAlgorithm": "SHA256-RSA",
+        "subjectCN": "cryptarium-fixture-rsa2048"
+      },
+      "functions": [
+        "verify"
+      ],
+      "evidence": {
+        "source": "certificate",
+        "path": "certs/rsa2048.pem",
+        "snippet": "x509 certificate CN=cryptarium-fixture-rsa2048; RSA-2048",
+        "ruleId": "certs.x509.certificate",
+        "confidence": "high"
+      },
+      "quantumClass": "broken",
+      "rationale": "integer factorization; broken by Shor's algorithm",
+      "recommendation": {
+        "target": "ML-KEM-768 (key establishment) / ML-DSA-65 (signatures)",
+        "standard": "FIPS 203 / FIPS 204",
+        "hybrid": "X25519+ML-KEM-768"
+      },
+      "relatedIds": null,
+      "oid": "1.2.840.113549.1.1.1",
+      "risk": {
+        "score": 83,
+        "priority": "critical",
+        "vulnerability": 100,
+        "longevity": 75,
+        "exposure": 70,
+        "agility": 70,
+        "explanation": "score=83 (critical): vulnerability=100 (quantumClass=broken); longevity=75 (certificate asset; long-lived trust anchor heuristic); exposure=70 (certificate in repo; often production-facing); agility=70 (cert/config binding; limited agility heuristic)"
+      }
+    },
+    {
+      "id": "4583aea637000a59",
+      "assetType": "library",
+      "primitive": "RSA",
+      "parameters": {
+        "module": "golang.org/x/crypto",
+        "notes": "Extended Go crypto; concrete primitives depend on imported subpackages.",
+        "primitives": [
+          "RSA",
+          "ECDSA",
+          "EdDSA",
+          "AES",
+          "ChaCha20",
+          "SHA-256"
+        ],
+        "version": "v0.31.0"
+      },
+      "functions": null,
+      "evidence": {
+        "source": "dependency",
+        "path": "go.mod",
+        "line": 6,
+        "snippet": "require golang.org/x/crypto v0.31.0",
+        "ruleId": "deps.go.golang.org.x.crypto",
+        "confidence": "medium"
+      },
+      "quantumClass": "broken",
+      "rationale": "integer factorization; broken by Shor's algorithm",
+      "recommendation": {
+        "target": "ML-KEM-768 (key establishment) / ML-DSA-65 (signatures)",
+        "standard": "FIPS 203 / FIPS 204",
+        "hybrid": "X25519+ML-KEM-768"
+      },
+      "relatedIds": null,
+      "oid": "1.2.840.113549.1.1.1",
+      "risk": {
+        "score": 70,
+        "priority": "high",
+        "vulnerability": 100,
+        "longevity": 50,
+        "exposure": 50,
+        "agility": 50,
+        "explanation": "score=70 (high): vulnerability=100 (quantumClass=broken); longevity=50 (no longevity signal; defaulted to 50); exposure=50 (no exposure signal; defaulted to 50); agility=50 (dependency presence; medium agility cost)"
+      }
+    },
+    {
+      "id": "6a7820e687f0d837",
+      "assetType": "algorithm",
+      "primitive": "RSA",
+      "parameters": {
+        "keySize": 2048
+      },
+      "functions": [
+        "keygen"
+      ],
+      "evidence": {
+        "source": "source-code",
+        "path": "token.go",
+        "line": 9,
+        "column": 2,
+        "snippet": "rsa.GenerateKey(rand.Reader, 2048)",
+        "ruleId": "go.crypto.rsa.generatekey",
+        "confidence": "high"
+      },
+      "quantumClass": "broken",
+      "rationale": "integer factorization; broken by Shor's algorithm",
+      "recommendation": {
+        "target": "ML-KEM-768 (key establishment) / ML-DSA-65 (signatures)",
+        "standard": "FIPS 203 / FIPS 204",
+        "hybrid": "X25519+ML-KEM-768"
+      },
+      "relatedIds": null,
+      "oid": "1.2.840.113549.1.1.1",
+      "risk": {
+        "score": 78,
+        "priority": "high",
+        "vulnerability": 100,
+        "longevity": 70,
+        "exposure": 50,
+        "agility": 80,
+        "explanation": "score=78 (high): vulnerability=100 (quantumClass=broken); longevity=70 (keygen/sign function; longer shelf-life heuristic); exposure=50 (no exposure signal; defaulted to 50); agility=80 (source call site; hardcoded primitive heuristic)"
+      }
+    }
   ]
 }

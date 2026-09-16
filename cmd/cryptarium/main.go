@@ -14,6 +14,7 @@ import (
 	"github.com/sgoveia/cryptarium/internal/pipeline"
 	"github.com/sgoveia/cryptarium/internal/report"
 	"github.com/sgoveia/cryptarium/internal/rules"
+	"github.com/sgoveia/cryptarium/internal/score"
 )
 
 // version is hardcoded for Phase 0; release builds may override later.
@@ -22,10 +23,11 @@ const version = "0.0.0-dev"
 // Exit codes per DESIGN.md §11:
 //
 //	0 — clean or below threshold
-//	1 — policy / --fail-on threshold exceeded (reserved until Phase 3)
-//	2 — scan error (unreadable target, invalid rules, unimplemented)
+//	1 — policy / --fail-on threshold exceeded
+//	2 — scan error (unreadable target, invalid rules)
 const (
 	exitOK        = 0
+	exitPolicy    = 1
 	exitScanError = 2
 )
 
@@ -124,6 +126,14 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	if fs.verbose {
 		writef(stderr, "cryptarium: %d finding(s), %d warning(s)\n", len(result.Findings), len(result.Warnings))
 	}
+
+	for _, s := range result.Scored {
+		if score.MeetsFailOn(s.Risk.Priority, fs.failOn) {
+			writef(stderr, "cryptarium: fail-on %s triggered by %s (%s) at %s\n",
+				fs.failOn, s.Primitive, s.Risk.Priority, s.Evidence.Path)
+			return exitPolicy
+		}
+	}
 	return exitOK
 }
 
@@ -162,6 +172,8 @@ func defaultFileName(format string) string {
 		return "CRYPTO-REPORT.md"
 	case "cbom":
 		return "cbom.json"
+	case "sarif":
+		return "results.sarif"
 	default:
 		return "cryptarium." + format
 	}
