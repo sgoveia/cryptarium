@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 
 	"github.com/sgoveia/cryptarium/internal/pipeline"
@@ -19,10 +20,21 @@ import (
 
 // version is overridden at release build time via:
 //
-//	-ldflags "-X main.version=v0.1.0"
+//	-ldflags "-X main.version=0.1.0"
 //
-// Dev and CI builds keep the default.
+// Dev builds keep the default. `go install @vX.Y.Z` picks up the module
+// version via runtime/debug.ReadBuildInfo when ldflags were not set.
 var version = "0.0.0-dev"
+
+func resolvedVersion() string {
+	if version != "" && version != "0.0.0-dev" {
+		return version
+	}
+	if info, ok := debug.ReadBuildInfo(); ok && info.Main.Version != "" && info.Main.Version != "(devel)" {
+		return strings.TrimPrefix(info.Main.Version, "v")
+	}
+	return version
+}
 
 // Exit codes per DESIGN.md §11:
 //
@@ -47,7 +59,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	switch args[0] {
 	case "version", "--version", "-V":
-		writef(stdout, "cryptarium %s\n", version)
+		writef(stdout, "cryptarium %s\n", resolvedVersion())
 		return exitOK
 	case "scan":
 		return runScan(args[1:], stdout, stderr)
@@ -104,7 +116,7 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	}
 
 	meta := report.Meta{
-		ToolVersion:   version,
+		ToolVersion:   resolvedVersion(),
 		Root:          fs.target,
 		Deterministic: fs.deterministic,
 	}
