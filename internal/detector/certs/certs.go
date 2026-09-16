@@ -16,6 +16,8 @@ import (
 	// DSA public keys so inventories do not silently omit legacy material.
 	"crypto/dsa" //nolint:staticcheck // SA1019: detect legacy DSA; never generate.
 
+	"software.sslmate.com/src/go-pkcs12"
+
 	"github.com/sgoveia/cryptarium/internal/collector"
 	"github.com/sgoveia/cryptarium/internal/detector"
 	"github.com/sgoveia/cryptarium/internal/model"
@@ -43,6 +45,8 @@ var handledExt = map[string]struct{}{
 	".cer": {},
 	".der": {},
 	".key": {},
+	".p12": {},
+	".pfx": {},
 }
 
 // Handles reports whether f looks like a certificate or key by extension.
@@ -59,15 +63,63 @@ func (d *Detector) Detect(ctx context.Context, f collector.FileRef) ([]model.Cry
 	default:
 	}
 
-	data, err := os.ReadFile(f.AbsPath)
+	data, err := os.ReadFile(f.AbsPath) //nolint:gosec // G304: AbsPath from collector walk
 	if err != nil {
 		return nil, fmt.Errorf("read %s: %w", f.Path, err)
 	}
 
+	ext := collector.Ext(f)
+	if ext == ".p12" || ext == ".pfx" {
+		return d.parsePKCS12(f, data)
+	}
 	if looksLikePEM(data) {
 		return d.parsePEM(f, data)
 	}
 	return d.parseDER(f, data)
+}
+
+// parsePKCS12 extracts certificate/key metadata from a PKCS#12 bundle.
+// Private key bytes are never retained. Wrong/unknown passwords yield a
+// warning error rather than a silent omit (DESIGN.md §4).
+func (d *Detector) parsePKCS12(f collector.FileRef, data []byte) ([]model.CryptoFinding, error) {
+	passwords := []string{"", pkcs12.DefaultPassword}
+	var lastErr error
+	for _, pw := range passwords {
+		key, cert, err := pkcs12.Decode(data, pw)
+		if err != nil {
+			lastErr = err
+			continue
+		}
+		// Discard key material immediately after reading algorithm metadata.
+		var findings []model.CryptoFinding
+		if cert != nil {
+			findings = append(findings, d.findingFromCert(f, cert))
+		}
+		if key != nil {
+			primitive, params := publicKeyInfo(publicFromPrivate(key))
+			if primitive != "UNKNOWN" {
+				findings = append(findings, model.CryptoFinding{
+					ID:         d.id(f, "certs.pkcs12.private", primitive, params),
+					AssetType:  model.AssetKey,
+					Primitive:  primitive,
+					Parameters: params,
+					Functions:  []model.CryptoFunction{model.FunctionSign},
+					Evidence: model.Evidence{
+						Source:     model.SourceCertificate,
+						Path:       f.Path,
+						Snippet:    fmt.Sprintf("PKCS#12 private key metadata; %s", describe(primitive, params)),
+						RuleID:     "certs.pkcs12.private",
+						Confidence: model.ConfidenceHigh,
+					},
+				})
+			}
+		}
+		if len(findings) == 0 {
+			return nil, fmt.Errorf("parse PKCS#12 %s: no certificate or key entries", f.Path)
+		}
+		return findings, nil
+	}
+	return nil, fmt.Errorf("parse PKCS#12 %s: unable to decrypt (tried empty and default passwords): %w", f.Path, lastErr)
 }
 
 func looksLikePEM(data []byte) bool {
