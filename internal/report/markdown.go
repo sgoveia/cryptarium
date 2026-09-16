@@ -22,7 +22,11 @@ func WriteMarkdown(w io.Writer, result *pipeline.Result, meta Meta) error {
 	}
 
 	counts := priorityCounts(result.Scored)
-	fmt.Fprintf(&b, "Findings: **%d**", len(result.Findings))
+	reported := len(result.Findings)
+	if len(result.Scored) > 0 {
+		reported = len(result.Scored)
+	}
+	fmt.Fprintf(&b, "Findings: **%d**", reported)
 	if len(result.Scored) > 0 {
 		fmt.Fprintf(&b, " · %d critical · %d high · %d medium · %d low",
 			counts[model.PriorityCritical], counts[model.PriorityHigh],
@@ -50,6 +54,9 @@ func WriteMarkdown(w io.Writer, result *pipeline.Result, meta Meta) error {
 			rec = strings.ReplaceAll(rec, "|", "\\|")
 			fmt.Fprintf(&b, "| %s (%d) | %s | `%s` | %s | %s |\n",
 				s.Risk.Priority, s.Risk.Score, s.QuantumClass, loc, s.Primitive, rec)
+			if len(s.RelatedIDs) > 0 {
+				fmt.Fprintf(&b, "| | | | | correlated with %d related finding(s) |\n", len(s.RelatedIDs))
+			}
 		}
 		b.WriteString("\n")
 		b.WriteString("Scores use vulnerability, longevity, exposure, and agility heuristics (DESIGN.md §7).\n")
