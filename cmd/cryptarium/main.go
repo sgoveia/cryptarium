@@ -17,8 +17,12 @@ import (
 	"github.com/sgoveia/cryptarium/internal/score"
 )
 
-// version is hardcoded for Phase 0; release builds may override later.
-const version = "0.0.0-dev"
+// version is overridden at release build time via:
+//
+//	-ldflags "-X main.version=v0.1.0"
+//
+// Dev and CI builds keep the default.
+var version = "0.0.0-dev"
 
 // Exit codes per DESIGN.md §11:
 //
