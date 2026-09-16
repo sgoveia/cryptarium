@@ -16,6 +16,7 @@ import (
 
 	// Register built-in detectors at init.
 	_ "github.com/sgoveia/cryptarium/internal/detector/certs"
+	_ "github.com/sgoveia/cryptarium/internal/detector/config"
 	_ "github.com/sgoveia/cryptarium/internal/detector/source"
 )
 

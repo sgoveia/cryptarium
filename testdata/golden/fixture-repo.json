@@ -43,6 +43,86 @@
       }
     },
     {
+      "id": "1cc750919d74b3f2",
+      "assetType": "protocol",
+      "primitive": "SHA-256",
+      "parameters": {
+        "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      },
+      "functions": [
+        "digest"
+      ],
+      "evidence": {
+        "source": "configuration",
+        "path": "deploy/nginx.conf",
+        "line": 7,
+        "snippet": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "ruleId": "config.nginx.ssl_ciphers",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "86bd9fb9390d205e",
+      "assetType": "protocol",
+      "primitive": "RSA",
+      "parameters": {
+        "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      },
+      "functions": [
+        "sign",
+        "keyexchange"
+      ],
+      "evidence": {
+        "source": "configuration",
+        "path": "deploy/nginx.conf",
+        "line": 7,
+        "snippet": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "ruleId": "config.nginx.ssl_ciphers",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "d559e056cd82c633",
+      "assetType": "protocol",
+      "primitive": "ECDH",
+      "parameters": {
+        "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      },
+      "functions": [
+        "keyexchange"
+      ],
+      "evidence": {
+        "source": "configuration",
+        "path": "deploy/nginx.conf",
+        "line": 7,
+        "snippet": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "ruleId": "config.nginx.ssl_ciphers",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "f5912484d257158a",
+      "assetType": "protocol",
+      "primitive": "AES",
+      "parameters": {
+        "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "keySize": 128,
+        "mode": "GCM"
+      },
+      "functions": [
+        "encrypt",
+        "decrypt"
+      ],
+      "evidence": {
+        "source": "configuration",
+        "path": "deploy/nginx.conf",
+        "line": 7,
+        "snippet": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "ruleId": "config.nginx.ssl_ciphers",
+        "confidence": "high"
+      }
+    },
+    {
       "id": "4583aea637000a59",
       "assetType": "library",
       "primitive": "RSA",
@@ -165,6 +245,153 @@
         "exposure": 70,
         "agility": 70,
         "explanation": "score=83 (critical): vulnerability=100 (quantumClass=broken); longevity=75 (certificate asset; long-lived trust anchor heuristic); exposure=70 (certificate in repo; often production-facing); agility=70 (cert/config binding; limited agility heuristic)"
+      }
+    },
+    {
+      "id": "1cc750919d74b3f2",
+      "assetType": "protocol",
+      "primitive": "SHA-256",
+      "parameters": {
+        "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      },
+      "functions": [
+        "digest"
+      ],
+      "evidence": {
+        "source": "configuration",
+        "path": "deploy/nginx.conf",
+        "line": 7,
+        "snippet": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "ruleId": "config.nginx.ssl_ciphers",
+        "confidence": "high"
+      },
+      "quantumClass": "weakened",
+      "rationale": "SHA-256; prefer SHA-384/SHA-512 in high-assurance contexts (CNSA 2.0)",
+      "recommendation": {
+        "target": "SHA-384 / SHA-512",
+        "standard": "FIPS 180-4 / CNSA 2.0"
+      },
+      "relatedIds": null,
+      "risk": {
+        "score": 62,
+        "priority": "high",
+        "vulnerability": 50,
+        "longevity": 50,
+        "exposure": 90,
+        "agility": 70,
+        "explanation": "score=62 (high): vulnerability=50 (quantumClass=weakened); longevity=50 (no longevity signal; defaulted to 50); exposure=90 (deploy/ingress/nginx path; high exposure); agility=70 (cert/config binding; limited agility heuristic)"
+      }
+    },
+    {
+      "id": "86bd9fb9390d205e",
+      "assetType": "protocol",
+      "primitive": "RSA",
+      "parameters": {
+        "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      },
+      "functions": [
+        "sign",
+        "keyexchange"
+      ],
+      "evidence": {
+        "source": "configuration",
+        "path": "deploy/nginx.conf",
+        "line": 7,
+        "snippet": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "ruleId": "config.nginx.ssl_ciphers",
+        "confidence": "high"
+      },
+      "quantumClass": "broken",
+      "rationale": "integer factorization; broken by Shor's algorithm",
+      "recommendation": {
+        "target": "ML-KEM-768 (key establishment) / ML-DSA-65 (signatures)",
+        "standard": "FIPS 203 / FIPS 204",
+        "hybrid": "X25519+ML-KEM-768"
+      },
+      "relatedIds": null,
+      "oid": "1.2.840.113549.1.1.1",
+      "risk": {
+        "score": 87,
+        "priority": "critical",
+        "vulnerability": 100,
+        "longevity": 70,
+        "exposure": 90,
+        "agility": 70,
+        "explanation": "score=87 (critical): vulnerability=100 (quantumClass=broken); longevity=70 (keygen/sign function; longer shelf-life heuristic); exposure=90 (deploy/ingress/nginx path; high exposure); agility=70 (cert/config binding; limited agility heuristic)"
+      }
+    },
+    {
+      "id": "d559e056cd82c633",
+      "assetType": "protocol",
+      "primitive": "ECDH",
+      "parameters": {
+        "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+      },
+      "functions": [
+        "keyexchange"
+      ],
+      "evidence": {
+        "source": "configuration",
+        "path": "deploy/nginx.conf",
+        "line": 7,
+        "snippet": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "ruleId": "config.nginx.ssl_ciphers",
+        "confidence": "high"
+      },
+      "quantumClass": "broken",
+      "rationale": "elliptic-curve discrete log; broken by Shor's algorithm",
+      "recommendation": {
+        "target": "ML-KEM-768",
+        "standard": "FIPS 203",
+        "hybrid": "X25519+ML-KEM-768"
+      },
+      "relatedIds": null,
+      "risk": {
+        "score": 82,
+        "priority": "critical",
+        "vulnerability": 100,
+        "longevity": 50,
+        "exposure": 90,
+        "agility": 70,
+        "explanation": "score=82 (critical): vulnerability=100 (quantumClass=broken); longevity=50 (no longevity signal; defaulted to 50); exposure=90 (deploy/ingress/nginx path; high exposure); agility=70 (cert/config binding; limited agility heuristic)"
+      }
+    },
+    {
+      "id": "f5912484d257158a",
+      "assetType": "protocol",
+      "primitive": "AES",
+      "parameters": {
+        "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "keySize": 128,
+        "mode": "GCM"
+      },
+      "functions": [
+        "encrypt",
+        "decrypt"
+      ],
+      "evidence": {
+        "source": "configuration",
+        "path": "deploy/nginx.conf",
+        "line": 7,
+        "snippet": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "ruleId": "config.nginx.ssl_ciphers",
+        "confidence": "high"
+      },
+      "quantumClass": "weakened",
+      "rationale": "AES-128 effective margin reduced by Grover's algorithm",
+      "recommendation": {
+        "target": "AES-256",
+        "standard": "FIPS 197"
+      },
+      "relatedIds": null,
+      "risk": {
+        "score": 62,
+        "priority": "high",
+        "vulnerability": 50,
+        "longevity": 50,
+        "exposure": 90,
+        "agility": 70,
+        "explanation": "score=62 (high): vulnerability=50 (quantumClass=weakened); longevity=50 (no longevity signal; defaulted to 50); exposure=90 (deploy/ingress/nginx path; high exposure); agility=70 (cert/config binding; limited agility heuristic)"
       }
     },
     {
