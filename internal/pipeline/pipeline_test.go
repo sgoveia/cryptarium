@@ -23,8 +23,20 @@ func TestRun_FixtureRepo(t *testing.T) {
 	if len(result.Findings) < 4 {
 		t.Fatalf("expected >=4 findings (2 certs + x/crypto + go source), got %d: %+v", len(result.Findings), result.Findings)
 	}
-	if len(result.Assets) != len(result.Findings) {
+	if len(result.Assets) == 0 || len(result.Assets) > len(result.Findings) {
 		t.Fatalf("assets=%d findings=%d", len(result.Assets), len(result.Findings))
+	}
+
+	// RSA story (go.mod + token.go + cert, and nginx RSA) should correlate.
+	var rsaRelated bool
+	for _, a := range result.Assets {
+		if a.Primitive == "RSA" && len(a.RelatedIDs) > 0 {
+			rsaRelated = true
+			break
+		}
+	}
+	if !rsaRelated {
+		t.Fatalf("expected RSA asset with RelatedIDs; assets=%+v", result.Assets)
 	}
 
 	// Determinism: second run byte-identical IDs and order.
