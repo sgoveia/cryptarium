@@ -1,0 +1,28 @@
+---
+title: "GitHub Action"
+description: "Run cryptarium in GitHub Actions with optional SARIF upload."
+---
+
+# GitHub Action
+
+**Purpose:** Run a scan in CI without installing the binary by hand, and optionally upload SARIF to GitHub code scanning.
+
+## Example
+
+```yaml
+- uses: sgoveia/cryptarium@v0.1.1
+  with:
+    path: .
+    fail-on: critical
+    upload-sarif: true
+```
+
+## Typical inputs
+
+| Input | Description |
+|---|---|
+| `path` | Repository path to scan |
+| `fail-on` | Severity threshold for a failing job |
+| `upload-sarif` | Upload results to the Security tab when true |
+
+Pin the Action to a tagged release. See [Uploading SARIF](/guides/sarif-upload) and [CI with --fail-on](/guides/ci-fail-on).

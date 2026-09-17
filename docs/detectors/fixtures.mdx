@@ -1,0 +1,27 @@
+---
+title: "Fixtures & validation"
+description: "Positive and negative fixtures keep rule packs honest."
+---
+
+# Fixtures & validation
+
+Every detector rule needs a positive *and* a negative fixture. The negative fixture is the one that matters — it encodes what the rule must not match.
+
+## Layout
+
+Fixtures live under `testdata/rules/<rule-id>/` in the repository (exact layout follows `DESIGN.md`).
+
+## Commands
+
+```bash
+make lint-rules
+make test
+make check   # fmt + lint + test — what CI runs
+```
+
+Regenerate goldens deliberately with `make golden` and review the diff — never blind-accept.
+
+## Related
+
+- [Adding a rule](/detectors/adding-a-rule)
+- [Determinism](/concepts/determinism)

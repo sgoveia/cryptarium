@@ -1,0 +1,31 @@
+---
+title: "Uploading SARIF"
+description: "Publish cryptarium results to the GitHub Security tab."
+---
+
+# Uploading SARIF
+
+## With the Action
+
+```yaml
+- uses: sgoveia/cryptarium@v0.1.1
+  with:
+    path: .
+    fail-on: critical
+    upload-sarif: true
+```
+
+Ensure the workflow has permission to upload security events (`security-events: write` on the job or workflow as required by GitHub).
+
+## Manual
+
+```bash
+cryptarium scan . --format sarif --output results.sarif
+```
+
+Upload `results.sarif` with `github/codeql-action/upload-sarif` or your platform's SARIF ingest.
+
+## Related
+
+- [SARIF output](/outputs/sarif)
+- [GitHub Action](/cli/github-action)

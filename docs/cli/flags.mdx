@@ -1,0 +1,38 @@
+---
+title: "Flags & exit codes"
+description: "Scan flags, output controls, and process exit codes."
+---
+
+# Flags & exit codes
+
+**Purpose:** Control formats, filters, policy thresholds, and determinism for `cryptarium scan`.
+
+## Common flags
+
+| Flag | Description |
+|---|---|
+| `--format` | Output format: `json`, `cbom`, `sarif`, `markdown`, `html` (repeatable) |
+| `--output` | Output path or directory |
+| `--rules` | Custom rule-pack path |
+| `--exclude` | Path exclude patterns |
+| `--include-tests` | Include test files in source detection |
+| `--fail-on` | Exit non-zero when findings meet or exceed this severity (`critical`, `high`, …) |
+| `--policy` | Policy file path (early / evolving) |
+| `--concurrency` | Worker concurrency |
+| `--deterministic` | Force deterministic output behavior |
+| `-v` | Verbose logging |
+
+Exact flag availability can evolve before 1.0 — run `cryptarium scan --help` on your installed version.
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Success (no threshold breach) |
+| `1` | Findings met or exceeded `--fail-on` |
+| `2` | Scan error |
+
+## Related
+
+- [CI with --fail-on](/guides/ci-fail-on)
+- [Determinism](/concepts/determinism)

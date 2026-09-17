@@ -1,0 +1,26 @@
+---
+title: "Correlation"
+description: "How cryptarium links dependency, source, certificate, and configuration evidence into one finding picture."
+---
+
+# Correlation
+
+Correlation joins findings from different detectors that describe the same cryptographic use.
+
+**Why this matters:** Four disconnected lists force humans to reconstruct relationships by hand. A correlated finding is actionable: the library, the call site that uses it, the key or certificate it produces, and the configuration that exposes it.
+
+## How to read a correlated finding
+
+Typical links:
+
+- A **dependency** finding (crypto library in a lockfile) plus a **source** finding (call into that library)
+- A **source** key-generation site plus a **certificate** artifact that embeds the resulting public key
+- A **configuration** cipher-suite setting plus the **source** or **dependency** TLS stack that enforces it
+
+Correlation raises confidence when independent evidence agrees. It does not invent primitives or reclassify quantum exposure — classification stays in the classifier stage.
+
+## Related
+
+- [Four evidence sources](/concepts/evidence-sources)
+- [Confidence & unknown](/concepts/confidence)
+- [Risk scoring](/concepts/scoring)

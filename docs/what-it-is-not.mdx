@@ -1,0 +1,15 @@
+---
+title: "What Cryptarium is not"
+description: "Credibility depends on never overstating what static discovery can prove."
+---
+
+# What Cryptarium is not
+
+Credibility here depends on never overstating what static discovery can prove.
+
+- **Not a cryptographic correctness auditor.** It reports which algorithms are used and their quantum exposure, not whether they are implemented securely (padding, IV reuse, side channels).
+- **Not a binary or firmware analyzer** (roadmap).
+- **Not a runtime or network TLS scanner** (roadmap). It sees what code and configuration *contain*, not what gets negotiated on the wire.
+- **Not a replacement for a cryptographer's judgment** on migration design. It surfaces and prioritizes; humans decide.
+
+Static analysis cannot see runtime algorithm selection, dynamically loaded providers, or wire-negotiated suites. The output must never imply otherwise. See [Limitations & roadmap](/reference/limitations).

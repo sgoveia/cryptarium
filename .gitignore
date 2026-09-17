@@ -24,3 +24,6 @@ testdata/certs/*.key
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+# Local Cursor / MCP config — never commit
+.cursor/

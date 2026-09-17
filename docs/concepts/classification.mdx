@@ -1,0 +1,41 @@
+---
+title: "Quantum classification"
+description: "Broken, Weakened, Safe/PQC, and Unknown — how cryptarium labels quantum exposure."
+---
+
+# Quantum classification
+
+Every finding is classified by quantum exposure: **Broken**, **Weakened**, **Safe/PQC**, or **Unknown**.
+
+**Why this matters:** Migration prioritization depends on whether a primitive fails under Shor's algorithm, loses margin under Grover's, or is already post-quantum. Guessing is worse than saying `unknown`.
+
+## Classes
+
+| Class | Meaning | Examples (from product docs) |
+|---|---|---|
+| **Broken** | Defeated by Shor's algorithm | RSA, ECDH/DH, ECDSA/EdDSA/DSA |
+| **Weakened** | Reduced margin under Grover's | AES-128, SHA-256 (context-dependent) |
+| **Safe / PQC** | Post-quantum or adequate classical margin | ML-KEM, ML-DSA, SLH-DSA; AES-256 in many contexts |
+| **Unknown** | Unrecognized primitive or insufficient evidence | Emit with evidence attached — never invent a claim |
+
+## Recommended targets
+
+| Classical primitive | Status | Recommended target |
+|---|---|---|
+| RSA | Broken (Shor) | ML-KEM (FIPS 203) for key establishment; ML-DSA (FIPS 204) for signatures |
+| ECDH / DH | Broken (Shor) | ML-KEM; hybrid X25519 + ML-KEM-768 during transition |
+| ECDSA / EdDSA / DSA | Broken (Shor) | ML-DSA (FIPS 204); SLH-DSA (FIPS 205) where a conservative hash-based option is preferred |
+| AES-128 | Weakened (Grover) | AES-256 |
+| SHA-256 | Weakened (Grover) | SHA-384 / SHA-512 in high-assurance contexts |
+| SHA-1, MD5, 3DES | Already broken | Deprecate immediately |
+
+Hybrid classical-plus-PQC constructions are a first-class recommended transition state.
+
+<Warning>
+  Documentation and the classifier must cite FIPS 203/204/205, a NIST SP, CNSA 2.0, or an RFC. If you cannot cite it, use `Unknown`.
+</Warning>
+
+## Related
+
+- [Canonical primitives](/reference/primitives)
+- [Risk scoring](/concepts/scoring)

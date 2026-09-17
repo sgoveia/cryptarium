@@ -1,0 +1,23 @@
+---
+title: "Outputs overview"
+description: "Choose CBOM, SARIF, Markdown/HTML, or JSON for the same scan."
+---
+
+# Outputs overview
+
+One scan can emit multiple formats. Use the format that matches the consumer.
+
+| Format | Flag | Best for |
+|---|---|---|
+| **CycloneDX CBOM** | `--format cbom` | Machine-readable inventory; CycloneDX-aware tools and GRC ingest |
+| **SARIF** | `--format sarif` | GitHub Security tab, SARIF viewers, build gates |
+| **Markdown / HTML** | `--format markdown` / `html` | Human deliverable for architects and migration owners |
+| **JSON** | `--format json` | Custom tooling and internal pipelines |
+
+```bash
+cryptarium scan . --format cbom --output cbom.json
+cryptarium scan . --format sarif --output results.sarif
+cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+```
+
+`--format` is repeatable when you need several artifacts from one run. See each format page for structure and caveats.

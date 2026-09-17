@@ -1,0 +1,26 @@
+---
+title: "Determinism"
+description: "Same input must produce byte-identical CBOM and SARIF output."
+---
+
+# Determinism
+
+Same input, byte-identical output. Determinism is a product promise, not a nice-to-have.
+
+**Why this matters:** CBOM and SARIF feed CI baselines, compliance archives, and diff-based review. Non-deterministic IDs or map-iteration order make those workflows unusable.
+
+## What this means in practice
+
+- No timestamps outside the designated metadata block
+- No map-iteration order leaking into serialized output
+- No counters in finding IDs
+- No dependence on goroutine scheduling for result order (results sorted at the join point)
+
+## AI enrichment
+
+If enrichment is enabled in a later phase, it **annotates only**. It must never create, delete, or reclassify findings. The CBOM must be identical with enrichment on and off.
+
+## Related
+
+- [Outputs overview](/outputs/overview)
+- [CLI flags](/cli/flags) (`--deterministic`)

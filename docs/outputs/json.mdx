@@ -1,0 +1,25 @@
+---
+title: "JSON"
+description: "Emit machine-readable JSON for custom tooling and internal pipelines."
+---
+
+# JSON
+
+**Purpose:** Structured scan results for custom consumers that do not ingest CBOM or SARIF directly.
+
+**When to use:** Internal dashboards, scripts, or early integration work before adopting CycloneDX.
+
+## Example
+
+```bash
+cryptarium scan . --format json --output results.json
+```
+
+## Caveats
+
+Prefer **CBOM** for portable inventory interchange and **SARIF** for code-scanning UIs when those consumers exist. JSON is the escape hatch, not the primary compliance artifact.
+
+## Related
+
+- [Outputs overview](/outputs/overview)
+- [CBOM](/outputs/cbom)

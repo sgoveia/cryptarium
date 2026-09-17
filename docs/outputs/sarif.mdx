@@ -1,0 +1,28 @@
+---
+title: "SARIF"
+description: "Emit SARIF for GitHub code scanning and other SARIF consumers."
+---
+
+# SARIF
+
+**Purpose:** Static Analysis Results Interchange Format output for GitHub Security and any SARIF viewer.
+
+**When to use:** Inline findings in pull requests, gate builds, or archive scan results in a standard results format.
+
+## Example
+
+```bash
+cryptarium scan . --format sarif --output results.sarif
+```
+
+With the GitHub Action and `upload-sarif: true`, results appear in the repository Security tab. See [Uploading SARIF](/guides/sarif-upload).
+
+## Caveats
+
+- Pair SARIF with `--fail-on` when you want a non-zero exit on severity thresholds ([CI with --fail-on](/guides/ci-fail-on)).
+- Finding text stays plain and specific — location, class, recommendation, confidence — not alarmist marketing copy.
+
+## Related
+
+- [GitHub Action](/cli/github-action)
+- [Flags & exit codes](/cli/flags)

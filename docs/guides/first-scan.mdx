@@ -1,0 +1,42 @@
+---
+title: "First scan in 5 minutes"
+description: "Copy-paste path from install to a Markdown migration report."
+---
+
+# First scan in 5 minutes
+
+A working narrative: install, scan, open the report.
+
+## Install
+
+```bash
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.1
+cryptarium version
+```
+
+## Scan your repo
+
+```bash
+cd /path/to/your/repo
+cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+```
+
+## Open the report
+
+Open `CRYPTO-REPORT.md` and sort attention by the Priority column. For each critical/high row, note the location, class, and recommendation.
+
+Example finding line:
+
+> RSA-2048 key generation at `token.go:88`; broken by Shor's algorithm; migrate to ML-DSA-65 (FIPS 204).
+
+## Optional: CBOM + SARIF
+
+```bash
+cryptarium scan . --format cbom --output cbom.json
+cryptarium scan . --format sarif --output results.sarif
+```
+
+## Next
+
+- [Reading the migration report](/guides/migration-report)
+- [CI with --fail-on](/guides/ci-fail-on)

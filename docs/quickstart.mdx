@@ -1,0 +1,78 @@
+---
+title: "Quickstart"
+description: "Install cryptarium, scan a repository, and read your first migration report."
+---
+
+# Quickstart
+
+Get from zero to a prioritized crypto inventory in a few minutes.
+
+## 1. Install
+
+```bash
+# Go 1.26+
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.1
+```
+
+Pre-built binaries are attached to [GitHub Releases](https://github.com/sgoveia/cryptarium/releases). See [Install](/install) for all options.
+
+## 2. Scan
+
+```bash
+cryptarium scan .
+```
+
+## 3. Emit the formats you need
+
+<CodeGroup>
+
+```bash
+# Human-readable migration report
+cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+
+# CycloneDX CBOM
+cryptarium scan . --format cbom --output cbom.json
+
+# SARIF for GitHub code scanning
+cryptarium scan . --format sarif --output results.sarif
+```
+
+```yaml
+- uses: sgoveia/cryptarium@v0.1.1
+  with:
+    path: .
+    fail-on: critical
+    upload-sarif: true
+```
+
+</CodeGroup>
+
+## Example report
+
+```
+# cryptarium report
+
+Tool: cryptarium 0.0.0-dev
+
+Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
+
+| Priority | Class | Location | Primitive | Recommendation |
+|---|---|---|---|---|
+| critical (83) | broken | `certs/ecdsa-p256.pem` | ECDSA | ML-DSA-65 (FIPS 204) |
+| critical (83) | broken | `certs/rsa2048.pem` | RSA | ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204) |
+| high (70) | broken | `go.mod:6` | RSA | ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204) |
+| high (78) | broken | `token.go:9` | RSA | ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204) |
+```
+
+Findings are plain and specific: location, classification, recommended target, and priority. See [Reading the migration report](/guides/migration-report).
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Concepts" icon="shield-halved" href="/concepts/evidence-sources">
+    How evidence sources, classification, and scoring work.
+  </Card>
+  <Card title="CI with --fail-on" icon="ban" href="/guides/ci-fail-on">
+    Fail the build when findings exceed a severity threshold.
+  </Card>
+</CardGroup>

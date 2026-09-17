@@ -1,0 +1,25 @@
+---
+title: "Risk scoring"
+description: "Four-axis prioritization so the inventory is actionable, not a flat spreadsheet."
+---
+
+# Risk scoring
+
+An inventory that flags everything as equally urgent is not actionable. Each finding is scored on four axes.
+
+**Why this matters:** Migration work has finite capacity. Scoring turns a CBOM into an ordered backlog.
+
+## Axes
+
+1. **Algorithm vulnerability** — broken outranks weakened outranks safe.
+2. **Data longevity (HNDL exposure)** — the longer a secret must hold, the higher the harvest-now-decrypt-later risk.
+3. **Exposure surface** — internet-facing vs. internal; in-transit vs. at-rest vs. code-signing.
+4. **Crypto-agility** — a hardcoded primitive costs more to remediate than one behind a provider interface.
+
+Priority bands (critical / high / medium / low) combine these axes into a single rank for reports and `--fail-on`.
+
+## Related
+
+- [Quantum classification](/concepts/classification)
+- [CI with --fail-on](/guides/ci-fail-on)
+- [Reading the migration report](/guides/migration-report)

@@ -1,0 +1,59 @@
+---
+title: "Install"
+description: "Install the cryptarium CLI via go install, GitHub Releases, or from source."
+---
+
+# Install
+
+Choose the path that matches your environment.
+
+<Tabs>
+  <Tab title="go install">
+    Requires [Go 1.26+](https://go.dev/dl/).
+
+    ```bash
+    go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.1
+    ```
+
+    Ensure `$(go env GOPATH)/bin` is on your `PATH`, then verify:
+
+    ```bash
+    cryptarium version
+    ```
+  </Tab>
+
+  <Tab title="GitHub Releases">
+    Pre-built binaries for linux, darwin, and windows (amd64 / arm64) are attached to each [tagged release](https://github.com/sgoveia/cryptarium/releases).
+
+    Download the archive for your platform, extract `cryptarium`, and place it on your `PATH`.
+  </Tab>
+
+  <Tab title="From source">
+    Clone the repository and build with the project Makefile:
+
+    ```bash
+    git clone https://github.com/sgoveia/cryptarium.git
+    cd cryptarium
+    make build   # -> bin/cryptarium
+    ./bin/cryptarium version
+    ```
+  </Tab>
+</Tabs>
+
+## GitHub Action
+
+For CI, prefer the published Action rather than installing the binary by hand:
+
+```yaml
+- uses: sgoveia/cryptarium@v0.1.1
+  with:
+    path: .
+    fail-on: critical
+    upload-sarif: true
+```
+
+See [GitHub Action](/cli/github-action) for inputs and SARIF upload.
+
+## Next
+
+Continue to [Quickstart](/quickstart) for your first scan.

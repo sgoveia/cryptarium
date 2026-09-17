@@ -1,0 +1,34 @@
+---
+title: "CLI overview"
+description: "cryptarium command surface: scan, version, and help."
+---
+
+# CLI overview
+
+`cryptarium` is a local Go CLI. The primary command is `scan`.
+
+| Command | Purpose |
+|---|---|
+| `cryptarium scan <path>` | Discover crypto, classify, score, and emit outputs |
+| `cryptarium version` | Print version |
+| `cryptarium help` | Show help |
+
+```bash
+cryptarium scan .
+cryptarium scan . --format cbom --output cbom.json
+cryptarium scan . --fail-on critical
+```
+
+## Pages in this section
+
+<CardGroup cols={2}>
+  <Card title="cryptarium scan" icon="magnifying-glass" href="/cli/scan">
+    Path arguments and scan behavior.
+  </Card>
+  <Card title="Flags & exit codes" icon="terminal" href="/cli/flags">
+    Formats, filters, concurrency, and exit status.
+  </Card>
+  <Card title="GitHub Action" icon="github" href="/cli/github-action">
+    CI wrapper with SARIF upload.
+  </Card>
+</CardGroup>
