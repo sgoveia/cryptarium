@@ -189,3 +189,6 @@ Cryptographic discovery is an active field, not an empty one. CSNP's QRAMM toolk
 ## License
 
 [Apache-2.0](LICENSE). The patent grant matters for cryptographic tooling.
+
+See [DISCLAIMER.md](DISCLAIMER.md) for warranty and liability limits that apply
+to authors, maintainers, and contributors.
