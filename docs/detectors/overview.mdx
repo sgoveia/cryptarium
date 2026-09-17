@@ -1,0 +1,26 @@
+---
+title: "Detectors overview"
+description: "Four detector kinds with one shared finding model."
+---
+
+# Detectors overview
+
+Detectors extract cryptographic evidence. They do not classify quantum exposure — that is the classifier's job after correlation.
+
+| Detector | Input | Output signal |
+|---|---|---|
+| Source | Parsed source via rule packs | Call sites, primitives, parameters |
+| Dependencies | Manifests / lockfiles | Crypto libraries present |
+| Certificates | PEM/DER/P12/JKS/SSH key material | Algorithms, sizes, curves, validity (metadata only) |
+| Configuration | TLS/SSH/JWT and related config | Configured suites, versions, algorithms |
+
+## Design constraints
+
+- Prefer AST / structured parsing over regex; regex is an explicit fallback with lowered confidence.
+- Never emit key material — metadata only, redacted snippets.
+- Unparseable files must produce warnings.
+
+## Related
+
+- [Rule packs](/detectors/rule-packs)
+- [Four evidence sources](/concepts/evidence-sources)

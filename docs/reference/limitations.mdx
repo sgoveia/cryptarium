@@ -1,0 +1,33 @@
+---
+title: "Limitations & roadmap"
+description: "Honest scope boundaries for v0.1 and what comes next."
+---
+
+# Limitations & roadmap
+
+## Current limitations
+
+- Static analysis only — no claim of completeness for runtime or wire-negotiated crypto
+- Not a correctness auditor (padding, IV reuse, side channels)
+- Binary / firmware analysis: roadmap
+- Runtime / network TLS scanning: roadmap
+- Container images and multi-repo aggregation: roadmap
+- Full declarative policy engine: early / evolving
+- AI-assisted triage: Phase 4; annotate-only when present; off by default
+
+## Build plan (from README)
+
+| Phase | Focus | Status |
+|---|---|---|
+| 0 | Scaffold: CLI skeleton, model, CI, license | Done |
+| 1 | Certificate/key + dependency detectors; JSON + Markdown | Done |
+| 2 | Rule-pack source detector; classifier; CBOM | Done |
+| 3 | Risk scoring; SARIF; GitHub Action | Done |
+| 4 | AI-assisted triage; multi-repo; containers | Open |
+
+Longer roadmap includes filesystem/container scanning, runtime/network discovery, binary and firmware analysis, org-wide aggregation, cloud KMS/HSM discovery, richer policy/exceptions, and additional CI/GRC exporters.
+
+## Related
+
+- [What Cryptarium is not](/what-it-is-not)
+- [Determinism](/concepts/determinism)

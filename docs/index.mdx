@@ -1,0 +1,43 @@
+---
+title: "cryptarium"
+description: "Cryptographic discovery and CBOM generation for the post-quantum transition."
+---
+
+# cryptarium
+
+**Cryptographic discovery and CBOM generation for the post-quantum transition.**
+
+One CLI. Four evidence sources. Correlated findings. Standards-based CBOM, SARIF, and a prioritized migration report.
+
+<CardGroup cols={4}>
+  <Card title="Source" icon="code" href="/concepts/evidence-sources">
+    Rule-pack detection over parsed source (tree-sitter).
+  </Card>
+  <Card title="Dependencies" icon="cubes" href="/concepts/evidence-sources">
+    Manifest and lockfile crypto-library inventory.
+  </Card>
+  <Card title="Certificates" icon="certificate" href="/concepts/evidence-sources">
+    X.509 and key metadata — algorithm, size, curve, validity.
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/concepts/evidence-sources">
+    TLS, SSH, JWT, and related crypto settings.
+  </Card>
+</CardGroup>
+
+`cryptarium` finds cryptography in source, dependencies, certificates, and configuration; classifies each use by quantum exposure; and emits a CycloneDX CBOM plus a prioritized migration report. Unlike single-source scanners, it correlates all four evidence sources so a finding is a linked picture — not four disconnected lists.
+
+<CardGroup cols={3}>
+  <Card title="Install" icon="download" href="/install">
+    `go install`, GitHub Releases, or build from source.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Scan a repo and read your first migration report.
+  </Card>
+  <Card title="CI & SARIF" icon="github" href="/cli/github-action">
+    Gate builds with `--fail-on` and upload SARIF to GitHub Security.
+  </Card>
+</CardGroup>
+
+<Info>
+  Status: **v0.1 inventory complete.** Core detectors, correlation, scoring, CBOM/SARIF, and the GitHub Action ship on tagged releases. Interfaces may still evolve before 1.0.
+</Info>

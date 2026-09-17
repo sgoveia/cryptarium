@@ -1,0 +1,26 @@
+---
+title: "Markdown / HTML report"
+description: "The human deliverable: prioritized findings with location, classification, target, and priority."
+---
+
+# Markdown / HTML report
+
+**Purpose:** Human-readable migration report — findings grouped by severity with location, classification, target, and priority.
+
+**When to use:** Forward to an architect or migration owner; attach to a change ticket; review interactively as HTML.
+
+## Example
+
+```bash
+cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+cryptarium scan . --format html --output CRYPTO-REPORT.html
+```
+
+## How to read it
+
+See [Reading the migration report](/guides/migration-report) for priority bands, classification columns, and recommended next actions.
+
+## Related
+
+- [Risk scoring](/concepts/scoring)
+- [Quantum classification](/concepts/classification)

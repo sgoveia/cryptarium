@@ -1,0 +1,30 @@
+---
+title: "Rule packs"
+description: "YAML rule packs are the primary coverage surface for source detection."
+---
+
+# Rule packs
+
+Most source coverage is declarative YAML under `rules/`, not hardcoded Go.
+
+**Why this matters:** Adding a library or language idiom should not require an engine change. Rule packs are the community contribution surface.
+
+## What a rule declares
+
+Typical fields (see `DESIGN.md` in the repository for the authoritative schema):
+
+- Stable `id` — renaming breaks SARIF baselines
+- Canonical `primitive` — must exist in the classifier's canonical set
+- Honest `confidence` — `high` only when the match establishes primitive *and* parameters
+- `references` — links to authoritative documentation
+
+## Validation
+
+```bash
+make lint-rules
+```
+
+## Related
+
+- [Adding a rule](/detectors/adding-a-rule)
+- [Fixtures & validation](/detectors/fixtures)

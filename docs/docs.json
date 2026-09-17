@@ -1,0 +1,138 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "cryptarium",
+  "description": "Cryptographic discovery and CBOM generation for the post-quantum transition.",
+  "colors": {
+    "primary": "#005DFC",
+    "light": "#3D7FFF",
+    "dark": "#031F45"
+  },
+  "appearance": {
+    "default": "system"
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "/"
+  },
+  "favicon": "/favicon.svg",
+  "fonts": {
+    "family": "Inter"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/sgoveia/cryptarium"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Install",
+      "href": "/install"
+    }
+  },
+  "navigation": {
+    "anchors": [
+      {
+        "anchor": "Docs",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "index",
+              "quickstart",
+              "install",
+              "what-it-is-not"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "concepts/evidence-sources",
+              "concepts/correlation",
+              "concepts/classification",
+              "concepts/confidence",
+              "concepts/determinism",
+              "concepts/scoring"
+            ]
+          },
+          {
+            "group": "Detectors & rules",
+            "pages": [
+              "detectors/overview",
+              "detectors/rule-packs",
+              "detectors/adding-a-rule",
+              "detectors/fixtures"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/first-scan",
+              "guides/ci-fail-on",
+              "guides/sarif-upload",
+              "guides/migration-report"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/primitives",
+              "reference/limitations",
+              "reference/changelog"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "CLI",
+        "icon": "terminal",
+        "groups": [
+          {
+            "group": "CLI reference",
+            "pages": [
+              "cli/overview",
+              "cli/scan",
+              "cli/flags",
+              "cli/github-action"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "Outputs",
+        "icon": "file-code",
+        "groups": [
+          {
+            "group": "Output formats",
+            "pages": [
+              "outputs/overview",
+              "outputs/cbom",
+              "outputs/sarif",
+              "outputs/report",
+              "outputs/json"
+            ]
+          }
+        ]
+      },
+      {
+        "anchor": "GitHub",
+        "icon": "github",
+        "href": "https://github.com/sgoveia/cryptarium"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/sgoveia/cryptarium"
+    }
+  },
+  "styling": {
+    "codeblocks": {
+      "theme": "night-owl"
+    }
+  }
+}

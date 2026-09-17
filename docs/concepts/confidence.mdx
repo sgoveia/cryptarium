@@ -1,0 +1,28 @@
+---
+title: "Confidence & unknown"
+description: "How cryptarium expresses certainty — and why Unknown beats a confident guess."
+---
+
+# Confidence & unknown
+
+Confidence describes how strongly the evidence establishes the primitive and its parameters. `Unknown` is an honest classification when evidence is incomplete.
+
+**Why this matters:** A wrong classification is worse than no classification. Teams that trust inflated confidence make bad migration decisions.
+
+## Confidence levels
+
+| Level | When it applies |
+|---|---|
+| **High** | The match alone establishes primitive *and* parameters (e.g., parsed X.509 with clear algorithm and key size; source call with explicit key size) |
+| **Medium** | Strong signal but incomplete picture (e.g., crypto library in a lockfile without a correlated call site) |
+| **Low** | Weak or ambiguous signal (regex fallback, partial parse) |
+
+## Unknown
+
+Unrecognized primitives, unparseable files, and missing parameters must not be silently dropped. Prefer:
+
+1. Emit `Unknown` with evidence attached
+2. Surface a warning for unparseable files
+3. Keep findings-so-far in the inventory
+
+Never invent a quantum-vulnerability claim to fill a gap.

@@ -1,0 +1,23 @@
+---
+title: "Adding a rule"
+description: "Checklist for shipping a new source-detection rule pack entry."
+---
+
+# Adding a rule
+
+Coverage should be a YAML file plus fixtures — not a Go change — whenever the rule schema is sufficient.
+
+## Checklist
+
+- [ ] Unique, stable `id` (renaming breaks users' SARIF baselines)
+- [ ] Canonical `primitive` name that exists in the classifier
+- [ ] Honest `confidence` — `high` only when the match alone establishes primitive *and* parameters
+- [ ] Positive fixture that must match
+- [ ] Negative fixture that must not (comment, test file, similar-looking non-crypto call)
+- [ ] `references` link to authoritative documentation
+- [ ] `make lint-rules` passes; golden files regenerated deliberately
+
+## Related
+
+- [Rule packs](/detectors/rule-packs)
+- [Fixtures & validation](/detectors/fixtures)

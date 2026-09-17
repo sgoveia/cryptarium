@@ -1,0 +1,31 @@
+---
+title: "Reading the migration report"
+description: "How to interpret priority, class, location, primitive, and recommendation columns."
+---
+
+# Reading the migration report
+
+The Markdown/HTML report is the human deliverable. Read it top-down by priority.
+
+## Columns
+
+| Column | Meaning |
+|---|---|
+| **Priority** | Combined score band (critical / high / medium / low) with numeric score |
+| **Class** | Quantum classification (`broken`, `weakened`, `safe`, `unknown`) |
+| **Location** | File and optional line |
+| **Primitive** | Canonical primitive name |
+| **Recommendation** | Migration target with standard citation when known |
+
+## How to act
+
+1. Clear **critical** findings first — typically Shor-broken public-key crypto on long-lived or exposed data.
+2. Confirm evidence at the listed location before changing code.
+3. Prefer hybrid classical-plus-PQC during transition when that matches your platform's supported suites.
+4. Treat `unknown` as work to investigate, not as "safe."
+
+## Related
+
+- [Risk scoring](/concepts/scoring)
+- [Quantum classification](/concepts/classification)
+- [Markdown / HTML report](/outputs/report)

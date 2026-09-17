@@ -1,0 +1,27 @@
+---
+title: "CBOM (CycloneDX)"
+description: "Emit a CycloneDX Cryptography Bill of Materials using cryptographic-asset components."
+---
+
+# CBOM (CycloneDX)
+
+**Purpose:** Machine-readable cryptographic inventory using CycloneDX **1.6+** `cryptographic-asset` components.
+
+**When to use:** Feed enterprise posture platforms, Dependency-Track-style tools, or any CycloneDX-aware pipeline. This is the portable inventory artifact.
+
+## Example
+
+```bash
+cryptarium scan . --format cbom --output cbom.json
+```
+
+## Caveats
+
+- Private keys and secrets are extracted for **metadata only** and discarded. Snippets are redacted before output.
+- The CBOM must remain identical if optional AI enrichment is toggled on or off (enrichment annotates; it never reclassifies).
+- Static discovery is incomplete by nature — the CBOM is an inventory of what was found, not a completeness certificate.
+
+## Related
+
+- [Determinism](/concepts/determinism)
+- [SARIF](/outputs/sarif)

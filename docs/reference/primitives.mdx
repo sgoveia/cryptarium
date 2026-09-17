@@ -1,0 +1,21 @@
+---
+title: "Canonical primitives"
+description: "Primitive names are canonical and uppercase — never free-text."
+---
+
+# Canonical primitives
+
+Crypto primitive names in findings and rule packs are **canonical and uppercase** (`RSA`, `ECDSA`, `AES`, `SHA-256`, `ML-KEM`, `ML-DSA`, …).
+
+## Why this matters
+
+Free-text primitive labels break correlation, classification tables, and SARIF baselines. Rules must reference a primitive that exists in the classifier's canonical set (`internal/classify` in the repository).
+
+## Classification pointers
+
+Authoritative mappings live in product code with citations to FIPS 203/204/205, NIST SPs, CNSA 2.0, or RFCs. Documentation summarizes; it does not invent thresholds. See [Quantum classification](/concepts/classification).
+
+## Related
+
+- [Rule packs](/detectors/rule-packs)
+- [Adding a rule](/detectors/adding-a-rule)

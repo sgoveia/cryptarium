@@ -1,0 +1,48 @@
+---
+title: "cryptarium scan"
+description: "Scan a local path for cryptography and emit CBOM, SARIF, or a migration report."
+---
+
+# cryptarium scan
+
+**Purpose:** Walk a repository path, run all detectors, correlate, classify, score, and write requested outputs.
+
+## Synopsis
+
+```bash
+cryptarium scan <path> [flags]
+```
+
+## Worked example
+
+<CodeGroup>
+
+```bash
+cryptarium scan .
+
+cryptarium scan ./services/payments \
+  --format markdown \
+  --format sarif \
+  --output out/ \
+  --fail-on high
+```
+
+```yaml
+- uses: sgoveia/cryptarium@v0.1.1
+  with:
+    path: .
+    fail-on: critical
+    upload-sarif: true
+```
+
+</CodeGroup>
+
+## Notes
+
+- Remote git URLs may appear in older README examples; if the installed CLI rejects them, scan a local checkout instead.
+- Unparseable files produce warnings — they are not silently skipped.
+
+## Related
+
+- [Flags & exit codes](/cli/flags)
+- [First scan in 5 minutes](/guides/first-scan)

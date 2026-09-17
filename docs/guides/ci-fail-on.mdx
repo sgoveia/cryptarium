@@ -1,0 +1,32 @@
+---
+title: "CI with --fail-on"
+description: "Fail the build when findings meet or exceed a severity threshold."
+---
+
+# CI with --fail-on
+
+Gate merges when the inventory still contains findings above a chosen severity.
+
+## Local
+
+```bash
+cryptarium scan . --fail-on critical
+echo $?   # 1 if any critical findings; 0 otherwise; 2 on scan error
+```
+
+## GitHub Actions
+
+```yaml
+- uses: sgoveia/cryptarium@v0.1.1
+  with:
+    path: .
+    fail-on: critical
+    upload-sarif: true
+```
+
+Start with `critical`, then tighten to `high` once the backlog is under control. Pair with [SARIF upload](/guides/sarif-upload) so failures are inspectable in the Security tab.
+
+## Related
+
+- [Flags & exit codes](/cli/flags)
+- [Risk scoring](/concepts/scoring)
