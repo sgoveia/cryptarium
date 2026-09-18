@@ -5,9 +5,10 @@
   </picture>
 </p>
 
-# cryptarium
 
-**Cryptographic discovery and CBOM generation for the post-quantum transition.**
+### **Cryptographic discovery and CBOM generation for the post-quantum transition.**
+
+
 
 [![CI](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml/badge.svg)](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sgoveia/cryptarium.svg)](https://pkg.go.dev/github.com/sgoveia/cryptarium)
