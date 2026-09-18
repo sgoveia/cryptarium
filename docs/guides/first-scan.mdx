@@ -21,6 +21,12 @@ cd /path/to/your/repo
 cryptarium scan . --format markdown --output CRYPTO-REPORT.md
 ```
 
+Or scan a public HTTPS repository (requires `git` on `PATH`):
+
+```bash
+cryptarium scan https://github.com/OWNER/REPO --format markdown --output CRYPTO-REPORT.md
+```
+
 ## Open the report
 
 Open `CRYPTO-REPORT.md` and sort attention by the Priority column. For each critical/high row, note the location, class, and recommendation.

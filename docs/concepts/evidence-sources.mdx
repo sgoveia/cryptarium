@@ -1,25 +1,27 @@
 ---
 title: "Four evidence sources"
-description: "Source, dependencies, certificates, and configuration — what each detector sees and what it cannot."
+description: "Source, dependencies, certificates, and configuration — what each detector sees today."
 ---
 
 # Four evidence sources
 
 `cryptarium` unifies four repository-resident evidence sources in one scan.
 
-**Why this matters:** Cryptographic choices are scattered across application code, transitive dependencies, embedded certificates, and configuration. An inventory that covers only one of those surfaces leaves migration work blind.
+**Why this matters:** Cryptographic choices are scattered across application code, dependency manifests, embedded certificates, and configuration. An inventory that covers only one of those surfaces leaves migration work blind.
 
-| Source | Examples | Method |
+| Source | Supported today (v0.2) | Method |
 |---|---|---|
-| **Source code** | Calls into `crypto/rsa`, `cryptography`, OpenSSL, BouncyCastle, Web Crypto, `java.security`; hardcoded key sizes and curves | Rule-pack pattern matching over parsed source (tree-sitter) |
-| **Dependencies** | Crypto libraries from `go.mod`, `requirements.txt`, `package-lock.json`, `pom.xml`, `Cargo.toml` | Manifest/lockfile parsing against a known-library catalog |
-| **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.p12`, `.jks`, SSH keys | X.509 parsing: signature algorithm, public-key algorithm, key size, curve, validity |
-| **Configuration** | TLS cipher suites and versions, SSH `KexAlgorithms`, JWT `alg`, IPsec/VPN settings | Config and string pattern matching |
+| **Source code** | Go, Python, JS/TS, Java, C/C++ call sites via YAML rule packs (e.g. `crypto/rsa`, `cryptography`, OpenSSL, Web Crypto, `java.security`) | Tree-sitter parse + rule-pack matching |
+| **Dependencies** | Go (`go.mod`) against a known-library catalog. Not yet: `requirements.txt`, `package-lock.json`, `pom.xml`, `Cargo.toml` | Manifest parsing; medium confidence until correlated with source |
+| **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx`. Not yet: `.jks`, OpenSSH private keys | X.509 / PKCS#12: signature algorithm, public-key algorithm, key size, curve, validity |
+| **Configuration** | nginx TLS cipher suites, SSH algorithm directives, JWT `alg` in auth-ish JSON/YAML. Not yet: IPsec/VPN | Config and suite-string parsing |
+
+Source scanning covers Python, JS/TS, Java, and C/C++ **call sites** even when their package manifests are not read.
 
 ## Confidence ceilings
 
-A dependency listed in `go.mod` is **medium** confidence at most. Correlation with a source finding is what earns **high**. See [Confidence & unknown](/concepts/confidence) and [Correlation](/concepts/correlation).
+A library listed in `go.mod` is **medium** confidence at most. Correlation with a source finding is what earns **high**. See [Confidence & unknown](/concepts/confidence) and [Correlation](/concepts/correlation).
 
 ## What static detectors cannot see
 
-Runtime algorithm selection, dynamically loaded providers, and what gets negotiated on the wire are out of scope for v0.1. Report holes honestly when files fail to parse — silent omission from an inventory is the worst failure mode.
+Runtime algorithm selection, dynamically loaded providers, and what gets negotiated on the wire are out of scope. Report holes honestly when files fail to parse — silent omission from an inventory is the worst failure mode.
