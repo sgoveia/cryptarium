@@ -14,24 +14,62 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/sgoveia/cryptarium.svg)](https://pkg.go.dev/github.com/sgoveia/cryptarium)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-`cryptarium` finds cryptography in source, dependencies, certificates, and configuration; classifies each use by quantum exposure; and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
+`cryptarium` is a Go-based CLI that scans a local repository for cryptography. It finds crypto in source, dependency manifests, certificates, and configuration; classifies each use by quantum exposure; and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
 
-Unlike single-source scanners, `cryptarium` unifies all four evidence sources in one binary and **correlates** them, so a finding is a linked picture (a dependency, the source call that uses it, the key or certificate it produces, and the configuration that exposes it) rather than four disconnected lists.
+Unlike single-source scanners, it unifies all four evidence sources in one binary and **correlates** them, so a finding is a linked picture (dependency, source call, key or certificate, and config) rather than four disconnected lists.
 
-> **Status: v0.1 inventory complete.** Core detectors, correlation, scoring, CBOM/SARIF, and the GitHub Action ship on tagged releases. Interfaces may still evolve before 1.0. See [DESIGN.md](DESIGN.md) for architecture and [the build plan](#build-plan) for roadmap items.
+You cannot migrate cryptography you cannot see. NIST, CISA, and CNSA 2.0 all start with inventory; `cryptarium` turns that into a CI-friendly scan of what your repository actually contains.
+
+> **Status: v0.1 inventory complete.** Core detectors, correlation, scoring, CBOM/SARIF, and the GitHub Action ship on tagged releases. Interfaces may still evolve before 1.0. See [DESIGN.md](DESIGN.md) for architecture and [Roadmap](#roadmap) for what is next.
 
 ---
 
-## Why
+## At a glance
 
-You cannot migrate cryptography you cannot see. Every serious post-quantum migration framework — NIST, CISA, CNSA 2.0 — opens with the same first step: build a cryptographic inventory. In practice that step is the bottleneck. Cryptographic choices are scattered across application code, transitive dependencies, embedded certificates, TLS and SSH configuration, and infrastructure, and most of them were made implicitly years ago, defaulting to RSA or elliptic-curve primitives.
+| Area | Supported today (v0.1) |
+|---|---|
+| **Source languages** | Go, Python, JavaScript / TypeScript, Java, C / C++ (tree-sitter + YAML rule packs) |
+| **Dependency manifests** | Go only (`go.mod` + known-library catalog). Not yet: `requirements.txt`, `package-lock.json`, `pom.xml`, `Cargo.toml`, and peers |
+| **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx` (X.509 / PKCS#12) |
+| **Configuration** | nginx TLS cipher suites, SSH algorithm directives, JWT `alg` in auth-ish JSON/YAML |
+| **Outputs** | Markdown (default), JSON, CycloneDX CBOM 1.6+, SARIF |
+| **CI** | GitHub Action; `--fail-on critical\|high\|medium\|low` |
 
-Two facts make this urgent rather than academic:
+Source scanning covers Python, JS/TS, Java, and C/C++ call sites even when their package manifests are not read. Not scanned yet: non-Go dependency manifests, JKS keystores, OpenSSH private keys, remote URL / git clone targets, binaries, containers, or live TLS negotiation.
 
-- **Harvest-now, decrypt-later.** An adversary can capture encrypted data today and decrypt it once a cryptographically-relevant quantum computer exists. Anything that must stay confidential beyond that point is already at risk health records, financial records, legal and government records, code-signing keys.
-- **The replacements are standardized.** NIST finalized ML-KEM (FIPS 203), ML-DSA (FIPS 204), and SLH-DSA (FIPS 205) in 2024. The blocker is no longer which algorithm to use. It is knowing what to change.
+---
 
-`cryptarium` treats that blocker as what it is: a code-scanning, dependency-graph, and configuration-analysis problem that should run at engineering scale and inside CI, not a manual audit.
+## Features
+
+- **Multi-source inventory:** source calls, dependency manifests, certificates/keys, and config in one pass
+- **Cross-source correlation:** links related findings (e.g. a library in `go.mod` and the call site that uses it) and raises confidence when evidence agrees
+- **Quantum classification:** Broken (Shor), Weakened (Grover), or Safe/PQC, with a recommended migration target
+- **Risk scoring:** prioritizes by algorithm vulnerability, data longevity, exposure surface, and crypto-agility
+- **CI gating:** SARIF upload and `--fail-on` to fail builds on a severity threshold
+- **Declarative rules:** add library or language coverage as YAML under [`rules/`](rules/) without changing the engine
+- **Deterministic output:** same input, byte-identical CBOM/report (no silent gaps: unparseable files are warned)
+
+---
+
+## Language and rule coverage
+
+Source detection uses tree-sitter parsing plus rule packs. Coverage is intentionally incomplete and grows by adding rules, not by claiming every crypto API in a language.
+
+| Language | Rule pack | What it matches today |
+|---|---|---|
+| **Go** | [`rules/go/stdlib-crypto.yaml`](rules/go/stdlib-crypto.yaml) | `crypto/rsa.GenerateKey`, `crypto/ecdsa.GenerateKey`, `TLS_*_WITH_AES_128_*` identifiers |
+| **Python** | [`rules/python/cryptography.yaml`](rules/python/cryptography.yaml) | `cryptography` RSA keygen, `hashlib.md5` |
+| **JavaScript / TypeScript** | [`rules/javascript/webcrypto.yaml`](rules/javascript/webcrypto.yaml) | Node `crypto.createCipheriv`, `crypto.subtle.generateKey` (TS/TSX reuse the JS pack) |
+| **Java** | [`rules/java/security.yaml`](rules/java/security.yaml) | `KeyPairGenerator.getInstance`, `Cipher.getInstance` (algorithm from string args) |
+| **C / C++** | [`rules/c/openssl.yaml`](rules/c/openssl.yaml), [`rules/cpp/openssl.yaml`](rules/cpp/openssl.yaml) | OpenSSL `RSA_generate_key_ex`, `EVP_PKEY_keygen` |
+
+**Dependency manifests (Go only in v0.1):** [`rules/libraries/catalog.yaml`](rules/libraries/catalog.yaml) flags known crypto modules in `go.mod` (e.g. `golang.org/x/crypto`, CIRCL, go-jose) at medium confidence until correlated with source. Python, JavaScript, Java, and C/C++ are covered via **source** rules above; their package managers are not parsed yet.
+
+**Certificates:** signature algorithm, public-key algorithm, key size, curve, and validity from parsed X.509 / PKCS#12 material. Private key bytes are never emitted.
+
+**Configuration:** nginx `ssl_ciphers` and bare `TLS_*`/`SSL_*` suite tokens; SSH `KexAlgorithms`, `HostKeyAlgorithms`, `Ciphers`, `MACs`; JWT `alg` in JSON/YAML whose basename suggests jwt/auth/security/token.
+
+---
 
 ## Install
 
@@ -48,21 +86,53 @@ Pre-built binaries (linux/darwin/windows, amd64/arm64) are attached to [GitHub R
 # Scan the current directory
 cryptarium scan .
 
-# Scan a remote repository
-cryptarium scan https://github.com/OWNER/REPO
-
 # Emit a CycloneDX CBOM
 cryptarium scan . --format cbom --output cbom.json
 
 # Emit SARIF for GitHub code scanning
 cryptarium scan . --format sarif --output results.sarif
 
-# Human-readable migration report
+# Human-readable migration report (default format)
 cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+
+# Machine-readable JSON
+cryptarium scan . --format json --output findings.json
 
 # Fail CI when anything scores Critical
 cryptarium scan . --fail-on critical
 ```
+
+### Scan flags
+
+```
+Usage:
+  cryptarium scan [flags] <path>
+
+Flags:
+  -concurrency int
+        worker count (default: NumCPU)
+  -deterministic
+        suppress timestamps and machine-specific metadata
+  -exclude value
+        glob to exclude (repeatable)
+  -fail-on string
+        fail when priority reaches: critical|high|medium|low|none (default "none")
+  -format value
+        output format: json|cbom|sarif|markdown|html (repeatable)
+  -include-tests
+        include test files and fixtures at normal scoring
+  -output string
+        output path, or "-" for stdout
+  -policy string
+        path to a policy file
+  -rules value
+        additional rule-pack directory (repeatable)
+  -v    verbose logging (shorthand)
+  -verbose
+        verbose logging
+```
+
+Run `cryptarium scan --help` for the same listing from the binary.
 
 ### Example output
 
@@ -91,14 +161,9 @@ Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
     upload-sarif: true
 ```
 
-## What it detects
+---
 
-| Source | Examples | Method |
-|---|---|---|
-| **Source code** | Calls into `crypto/rsa`, `cryptography`, OpenSSL, BouncyCastle, Web Crypto, `java.security`; hardcoded key sizes and curves | Rule-pack pattern matching over parsed source (tree-sitter) |
-| **Dependencies** | Crypto libraries from `go.mod`, `requirements.txt`, `package-lock.json`, `pom.xml`, `Cargo.toml` | Manifest/lockfile parsing against a known-library catalog |
-| **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.p12`, `.jks`, SSH keys | X.509 parsing: signature algorithm, public-key algorithm, key size, curve, validity |
-| **Configuration** | TLS cipher suites and versions, SSH `KexAlgorithms`, JWT `alg`, IPsec/VPN settings | Config and string pattern matching |
+## Classification and prioritization
 
 Every finding is classified as **Broken** (defeated by Shor's algorithm), **Weakened** (reduced margin under Grover's), or **Safe/PQC**, and mapped to a recommended migration target:
 
@@ -111,92 +176,70 @@ Every finding is classified as **Broken** (defeated by Shor's algorithm), **Weak
 | SHA-256 | Weakened (Grover) | SHA-384 / SHA-512 in high-assurance contexts |
 | SHA-1, MD5, 3DES | Already broken | Deprecate immediately |
 
-Hybrid classical-plus-PQC constructions are a first-class recommended transition state, because that is what real migrations deploy first.
+Hybrid classical-plus-PQC constructions are a first-class recommended transition state.
 
-## Risk-based prioritization
+Each finding is scored on four axes so the inventory is actionable:
 
-An inventory that flags everything as equally urgent is not actionable. Each finding is scored on four axes:
+1. **Algorithm vulnerability:** broken outranks weakened outranks safe
+2. **Data longevity (HNDL exposure):** longer-lived secrets rank higher
+3. **Exposure surface:** internet-facing vs. internal; in-transit vs. at-rest vs. code-signing
+4. **Crypto-agility:** hardcoded primitives cost more to remediate than provider-backed ones
 
-1. **Algorithm vulnerability** — broken outranks weakened outranks safe.
-2. **Data longevity (HNDL exposure)** — the longer a secret must hold, the higher the harvest-now-decrypt-later risk.
-3. **Exposure surface** — internet-facing vs. internal; in-transit vs. at-rest vs. code-signing.
-4. **Crypto-agility** — a hardcoded primitive costs more to remediate than one behind a provider interface.
-
-## Output formats
-
-- **CycloneDX CBOM (1.6+)** — machine-readable inventory using `cryptographic-asset` components, consumable by any CycloneDX-aware tool.
-- **SARIF** — appears under **Security → Code scanning** (tool: cryptarium) and any SARIF viewer; can gate a build. The workflow needs `security-events: write`. Public repos support third-party SARIF upload; private/internal repos need GitHub Code Security enabled.
-- **Markdown / HTML** — the human deliverable: findings grouped by service and severity with location, classification, target, and priority.
+---
 
 ## What this is not
 
-Credibility here depends on never overstating what static discovery can prove.
+Credibility depends on never overstating what static discovery can prove.
 
-- Not a cryptographic **correctness** auditor. It reports which algorithms are used and their quantum exposure, not whether they are implemented securely (padding, IV reuse, side channels).
-- Not a binary or firmware analyzer (roadmap).
-- Not a runtime or network TLS scanner (roadmap). It sees what code and configuration *contain*, not what gets negotiated on the wire.
-- Not a replacement for a cryptographer's judgment on migration design. It surfaces and prioritizes; humans decide.
+- Not a cryptographic **correctness** auditor (padding, IV reuse, side channels)
+- Not a binary, firmware, or container analyzer (roadmap)
+- Not a runtime or network TLS scanner (roadmap); it sees what code and config *contain*, not what is negotiated on the wire
+- Not a multi-ecosystem dependency scanner yet; only `go.mod` in v0.1
+- Not a replacement for a cryptographer's judgment on migration design
 
-## Build plan
+---
+
+## Roadmap
 
 | Phase | Focus | Status |
 |---|---|---|
 | 0 | Scaffold: CLI skeleton, `CryptoFinding` model, CI, license | ✅ |
 | 1 | Certificate/key + dependency-manifest detectors; JSON + Markdown output | ✅ |
-| 2 | Rule-pack source detector (Go, Python, JS/TS, Java, C/C++; tree-sitter via gotreesitter / no CGO); classifier; CBOM | ✅ |
+| 2 | Rule-pack source detector (Go, Python, JS/TS, Java, C/C++; tree-sitter, no CGO); classifier; CBOM | ✅ |
 | 3 | Risk scoring; SARIF; GitHub Action | ✅ |
 | 4 | AI-assisted triage; multi-repo scanning; container images | ⬜ |
 
-Longer roadmap: container and filesystem scanning, runtime/network discovery, binary and firmware analysis, org-wide aggregation, cloud KMS/HSM discovery, a full declarative policy engine with migration-exception tracking, and export to GitLab CI, Jenkins, SonarQube, Dependency-Track, SIEM, and GRC destinations.
+Near-term coverage expansion includes additional dependency ecosystems and deeper rule packs. Longer roadmap: filesystem/container scanning, runtime/network discovery, binary analysis, org-wide aggregation, cloud KMS/HSM discovery, and export to more CI/GRC destinations.
+
+`cryptarium` aims to own **code and CI discovery** (open CLI + GitHub Action producing an auditable CBOM), integrate with enterprise posture platforms via CBOM/SARIF/JSON, and treat runtime/network assurance as roadmap, not as something static analysis can claim today.
+
+---
 
 ## Development
 
-The repository ships a dev container. Open it in a GitHub Codespace or in VS Code with the Dev Containers extension and you get Go 1.26, `golangci-lint`, `gotestsum`, `gofumpt`, `govulncheck`, `cyclonedx-gomod`, and the GitHub CLI, already configured.
+The repository ships a dev container (Codespaces or VS Code Dev Containers) with Go 1.26 and the usual toolchain.
 
 ```bash
 make help      # list targets
-make check     # fmt + lint + test — what CI runs
+make check     # fmt + lint + test (what CI runs)
 make build     # -> bin/cryptarium
 make selfscan  # scan this repo with the tool itself
 ```
 
-`cryptarium` must always scan its own repository cleanly. The self-scan runs on every PR.
-
-See [DESIGN.md](DESIGN.md) for architecture and [AGENT.md](AGENT.md) for the conventions that govern both human and AI-assisted contributions.
+See [DESIGN.md](DESIGN.md) for architecture and [AGENT.md](AGENT.md) for contribution conventions.
 
 ## Contributing
 
-The most valuable contribution is **coverage**, and coverage should be a YAML file plus a test fixture, never a Go change. Rule packs live in [`rules/`](rules/); the schema is documented in [DESIGN.md](DESIGN.md#rule-pack-schema). Adding a library, a language idiom, or a configuration format should not require touching the engine.
-
-Every detector is validated against a `testdata/` corpus of real certificates and small sample projects. Reproducible output is the product's core promise, so a new rule without a fixture will not be merged.
-
-## Positioning
-
-Cryptographic discovery is an active field, not an empty one. CSNP's QRAMM toolkit (CryptoScan, CryptoDeps, TLS-Analyzer), CBOMkit, CodeQL, and Semgrep cover parts of this; IBM Quantum Safe Explorer, SandboxAQ, Keyfactor, DigiCert, and QuSecure cover the enterprise and runtime layers.
-
-`cryptarium` aims at one layer and integrates outward from it:
-
-| Layer | `cryptarium` position |
-|---|---|
-| **Code and CI discovery** | **Own it.** The open, low-friction, multi-source crypto inventory compiler for repositories and CI. |
-| **Enterprise crypto posture** | **Integrate.** Export normalized CBOM/SARIF/JSON that those platforms and GRC systems ingest. |
-| **Runtime and network assurance** | **Roadmap.** Correlate static intent with actually-negotiated crypto rather than claiming static analysis is complete.
-
-> One open CLI and GitHub-native CI action that gives developers an auditable, correlated, PQC-migration-ready CBOM across all repository-resident crypto evidence — code, dependencies, certificates, and configuration — before it becomes an enterprise runtime problem.
+The highest-value contribution is **coverage**: a YAML rule pack in [`rules/`](rules/) plus fixtures in `testdata/`, not a Go change. Schema: [DESIGN.md](DESIGN.md#rule-pack-schema). Every new rule needs a positive and a negative fixture.
 
 ## References
 
-- NIST **FIPS 203** — Module-Lattice-Based Key-Encapsulation Mechanism (ML-KEM)
-- NIST **FIPS 204** — Module-Lattice-Based Digital Signature Algorithm (ML-DSA)
-- NIST **FIPS 205** — Stateless Hash-Based Digital Signature Algorithm (SLH-DSA)
-- **CycloneDX** — Cryptography Bill of Materials (CBOM), spec 1.6+
-- **NSA CNSA 2.0** — Commercial National Security Algorithm Suite and migration timeline
-- **SARIF** — Static Analysis Results Interchange Format (OASIS)
-- **NIST / CISA** post-quantum migration guidance — cryptographic inventory as the first step
+- NIST **FIPS 203** (ML-KEM), **FIPS 204** (ML-DSA), **FIPS 205** (SLH-DSA)
+- **CycloneDX** CBOM (spec 1.6+), **SARIF** (OASIS), **NSA CNSA 2.0**
+- **NIST / CISA** post-quantum migration guidance: cryptographic inventory as the first step
 
 ## License
 
 [Apache-2.0](LICENSE). The patent grant matters for cryptographic tooling.
 
-See [DISCLAIMER.md](DISCLAIMER.md) for warranty and liability limits that apply
-to authors, maintainers, and contributors.
+See [DISCLAIMER.md](DISCLAIMER.md) for warranty and liability limits that apply to authors, maintainers, and contributors.
