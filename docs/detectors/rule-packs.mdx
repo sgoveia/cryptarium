@@ -1,32 +1,226 @@
 ---
 title: "Rule packs"
-description: "YAML rule packs are the primary coverage surface for source detection."
+description: "Why rule packs exist, how they load, and every field — pack, rule, match, parameters, and the library catalog."
 ---
 
 # Rule packs
 
-Most source coverage is declarative YAML under `rules/`, not hardcoded Go.
+Most source coverage is declarative YAML under `rules/`, not hardcoded Go. Packs are validated by loader invariants and `make lint-rules`, then matched by the source detector against a tree-sitter AST (with a lowered-confidence regex fallback).
 
-**Why this matters:** Adding a library or language idiom should not require an engine change. Rule packs are the community contribution surface.
+**Why this matters:** Adding a library or language idiom should not require an engine change. Rule packs are the community contribution surface. Renaming a rule `id` is a breaking change for SARIF baselines and suppressions — treat IDs as public API.
 
-Release binaries and `go install` builds embed the default packs, so a standalone binary can scan without a source checkout. When an on-disk `rules/` tree is found by walking up from the working directory, it overrides the embed (useful while editing packs). Use `--rules` to load additional directories after the defaults.
+## What lives where
 
-## What a rule declares
+| Path | Role |
+|---|---|
+| `rules/go/`, `rules/python/`, `rules/javascript/`, `rules/java/`, `rules/c/`, `rules/cpp/` | Source rule packs (`*.yaml`) |
+| `rules/libraries/catalog.yaml` | Dependency catalog (separate schema; not in `schema.json`) |
+| `rules/schema.json` | Documented contract for source packs |
+| `rules/embed.go` | `go:embed` so release binaries ship default packs |
 
-Typical fields (see `DESIGN.md` in the repository for the authoritative schema):
+Release binaries and `go install` builds **embed** the default packs. At scan time the loader prefers an on-disk `rules/` found by walking up from the working directory (so local edits apply without rebuild), then falls back to the embed. Use `--rules` to **append** additional directories after the defaults — it does not replace them. See [CLI flags](/cli/flags).
 
-- Stable `id` — renaming breaks SARIF baselines
-- Canonical `primitive` — must exist in the classifier's canonical set
-- Honest `confidence` — `high` only when the match establishes primitive *and* parameters
-- `references` — links to authoritative documentation
+<Info>
+  `DESIGN.md` says packs are validated against `schema.json` at load time. As implemented, the Go loader performs hand checks (`id`, `language`, per-rule `id` / `primitive` / `match.kind`); there is no JSON-Schema library in the runtime. Treat `schema.json` as the contract and keep YAML aligned with it.
+</Info>
 
-## Validation
+## Pack-level fields
 
-```bash
-make lint-rules
+Every source pack is one YAML document.
+
+```yaml
+id: c-openssl
+version: 1
+language: c
+description: OpenSSL and common C cryptographic API calls.
+
+rules:
+  - id: c.openssl.rsa_generate_key_ex
+    # ...
 ```
+
+| Field | Required | Need | Use case |
+|---|---|---|---|
+| `id` | yes | Stable pack identity for humans and loaders | `c-openssl`, `javascript-webcrypto`, `go-stdlib-crypto` |
+| `version` | yes (schema) | Pack revision number | Bump when you make intentional pack-wide changes; schema requires integer ≥ 1 |
+| `language` | yes | Selects which files the pack applies to | `c`, `cpp`, `javascript`, `go`, `python`, `java`, … |
+| `description` | no | Human documentation | Not used in matching |
+| `rules` | yes | At least one rule | Empty packs are rejected by schema intent |
+
+### Language routing and aliases
+
+The source detector maps file extensions to a language, then loads packs whose `language` matches — including aliases:
+
+| File language | Packs that apply |
+|---|---|
+| `typescript` (`.ts`, `.tsx`) | `typescript` **and** `javascript` |
+| `cpp` | `cpp` **and** `c` |
+| others | Exact match only |
+
+That is why a rule in `rules/javascript/webcrypto.yaml` also fires on TypeScript, and why OpenSSL symbols in `rules/c/` also cover C++ files that share the C grammar path. Put C++-only idioms in `rules/cpp/` when you do not want them on pure C.
+
+## Per-rule fields
+
+```yaml
+  - id: c.openssl.rsa_generate_key_ex
+    primitive: RSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_generate_key_ex
+    parameters: {}   # optional
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_generate_key.html"
+```
+
+### `id`
+
+**Need:** Globally unique, stable machine identity. Becomes `Evidence.RuleID` and is hashed into the finding ID.
+
+**Use case:** `c.openssl.rsa_generate_key_ex`, `js.crypto.createcipheriv.aes`. Dot-separated, language-first namespaces keep collisions rare.
+
+**Do not:** Rename casually. Renaming breaks SARIF baselines and user suppressions.
+
+### `primitive`
+
+**Need:** Canonical name the classifier already understands (`RSA`, `ECDSA`, `AES`, `SHA-256`, `ML-KEM`, …). See [Canonical primitives](/reference/primitives).
+
+**Crypto role:** The rule only *observes* that this API site uses (or may use) that primitive. Quantum class (Broken / Weakened / Safe / Unknown) is assigned later by `internal/classify` with citations — never inside the YAML.
+
+**Use case:**
+- `RSA_generate_key_ex` → `RSA` (clear)
+- `EVP_PKEY_keygen` → `UNKNOWN` (algorithm chosen at runtime)
+- `crypto.subtle.generateKey` → `UNKNOWN` (polymorphic Web Crypto)
+
+Unrecognized free-text primitives become `ClassUnknown` downstream. Prefer `UNKNOWN` over inventing a name.
+
+### `assetType`
+
+**Need:** CycloneDX-oriented category on the finding. Source rules usually omit it; the detector defaults to `algorithm`.
+
+**Values in practice:** `algorithm`, `certificate`, `key`, `protocol`, `library`. The deps detector hardcodes `library`.
+
+### `functions`
+
+**Need:** What cryptographic operation the site performs. Copied onto the finding; the scorer uses them (for example `keygen` / `sign` raise longevity heuristics).
+
+**Common values:** `keygen`, `encrypt`, `decrypt`, `sign`, `verify`, `keyexchange`, `digest`.
+
+**Use case:** OpenSSL RSA key generation → `[keygen]`. Node `createCipheriv` → `[encrypt]` (and add `decrypt` if the same API is used both ways in your narrative — be honest to the call).
+
+### `confidence`
+
+**Need:** How strongly *this match alone* establishes the primitive and its parameters.
+
+| Level | When to use |
+|---|---|
+| `high` | Symbol (and extracted params) establish primitive *and* parameters — e.g. RSA-specific keygen API |
+| `medium` | Strong signal, incomplete picture — e.g. AES via `createCipheriv` without capturing the algorithm string |
+| `low` | Ambiguous or polymorphic API — e.g. `generateKey` / `EVP_PKEY_keygen` |
+
+Empty or unknown values fall back to **medium** in the loader path. **Regex fallback always forces `low`**, regardless of the YAML value. See [Confidence & unknown](/concepts/confidence).
+
+### `match`
+
+Required object. Dispatches how the AST (or regex fallback) locates the site.
+
+#### `match.kind`: `call`
+
+Matches a function/method invocation.
+
+| Subfield | Need | Use case |
+|---|---|---|
+| `package` | Qualifier / import path to disambiguate | `openssl`, `crypto`, `crypto.subtle`, `crypto/rsa` |
+| `symbol` | Exact callee name | `RSA_generate_key_ex`, `createCipheriv`, `GenerateKey` |
+
+For C/OpenSSL, `package: openssl` is a special case: the detector can match even when the AST has no package qualifier (typical bare C calls).
+
+#### `match.kind`: `identifier`
+
+Matches an identifier against a Go RE2 `pattern` — used for TLS suite constants and similar named tokens, not for calls.
+
+```yaml
+  - id: go.crypto.tls.ciphersuite.aes128
+    primitive: AES
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'TLS_.*_WITH_AES_128_.*'
+    parameters:
+      keySize: { value: 128 }
+```
+
+### `parameters`
+
+Optional map of static values and/or extraction specs. They become finding parameters that classification and scoring can use (for example AES key size).
+
+| Form | Behavior |
+|---|---|
+| `keySize: { value: 128 }` | Static parameter baked into every hit |
+| `keySize: { from: argument, index: 1, type: int }` | Read the Nth call argument (0-based in Go's resolver) and optionally coerce `int` / `string` |
+| Bare scalar | Copied as-is via static params |
+
+<Warning>
+  Some packs declare `from: keyword` with a `name` (Python keyword arguments). That form is **not implemented** in the source detector today — the field is ignored at match time. Prefer positional `from: argument` where the language AST exposes arguments, or omit parameters and lower confidence.
+</Warning>
+
+### `references`
+
+**Need:** Authoritative documentation for authors and reviewers (OpenSSL man pages, MDN, Node docs, pkg.go.dev).
+
+**Runtime:** Not copied onto findings today. Still required by contributor discipline — every rule should cite where the API is defined.
+
+## How matching works inside the app
+
+1. **Load** packs from on-disk `rules/` or embed; optionally append `--rules` dirs.
+2. **Parse** the file with tree-sitter (WASM / no-CGO). On failure → regex fallback.
+3. For each applicable pack/rule:
+   - **`call`:** language-specific query captures package, symbol, and call node; compare `symbol` exactly; resolve `package` via imports / OpenSSL special case; run parameter extraction.
+   - **`identifier`:** match `pattern` against identifier text.
+4. Emit a `CryptoFinding` with stable ID from detector + rule ID + path + line + primitive + canonical params.
+5. Skip comment-only lines in regex fallback; still force `low` confidence.
+
+Comments and string literals that look like crypto APIs should fail the AST call query — that is why [negative fixtures](/detectors/fixtures) matter.
+
+## Library catalog (deps detector)
+
+`rules/libraries/catalog.yaml` is **not** a source rule pack. It feeds the dependency detector.
+
+```yaml
+libraries:
+  - name: golang.org/x/crypto
+    ecosystem: go
+    primitives: [RSA, ECDSA, EdDSA, AES, ChaCha20, SHA-256]
+    notes: Extended Go crypto; concrete primitives depend on imported subpackages.
+    confidence: medium
+```
+
+| Field | Need |
+|---|---|
+| `name` | Module path matched against `go.mod` requires (exact or `name/` prefix) |
+| `ecosystem` | Filter key — **as implemented, only `go` is consumed** |
+| `primitives` | Claimed primitives; first becomes the finding primitive; full list stored in parameters |
+| `notes` | Stored on the finding when present |
+| `confidence` | Evidence confidence; presence is conceptually **medium at most** |
+
+A catalog hit means “this crypto-capable library is in the graph,” not “this primitive is used.” [Correlation](/concepts/correlation) with a source finding is what earns higher confidence.
+
+## Shipped packs (examples)
+
+| Pack | Language | Illustrative rules |
+|---|---|---|
+| `c-openssl` | `c` | `RSA_generate_key_ex` → RSA / high; `EVP_PKEY_keygen` → UNKNOWN / medium |
+| `cpp-openssl` | `cpp` | Same OpenSSL RSA symbol for C++-labeled files |
+| `javascript-webcrypto` | `javascript` | `createCipheriv` → AES / medium; `subtle.generateKey` → UNKNOWN / low |
+| `go-stdlib-crypto` | `go` | `rsa.GenerateKey` with `keySize` from argument index 1 |
+| `python/cryptography`, `java/security` | … | Same schema, language-specific packages |
 
 ## Related
 
-- [Adding a rule](/detectors/adding-a-rule)
+- [Adding a rule](/detectors/adding-a-rule) — step-by-step C and JavaScript examples
 - [Fixtures & validation](/detectors/fixtures)
+- [Detectors overview](/detectors/overview)
+- [CLI flags](/cli/flags) — `--rules`

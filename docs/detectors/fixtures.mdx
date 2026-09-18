@@ -1,27 +1,118 @@
 ---
 title: "Fixtures & validation"
-description: "Positive and negative fixtures keep rule packs honest."
+description: "Positive and negative fixtures keep rule packs honest — layout, commands, and what CI enforces today."
 ---
 
 # Fixtures & validation
 
-Every detector rule needs a positive *and* a negative fixture. The negative fixture is the one that matters — it encodes what the rule must not match.
+Every detector rule needs a positive *and* a negative fixture. The negative fixture is the one that matters — it encodes what the rule must not match (comments, lookalike APIs, non-crypto call sites).
+
+**Why this matters:** Regex-shaped intuition matches comments and strings. Cryptarium’s source detector prefers AST matches so comment-only mentions stay out of the inventory. Fixtures lock that behavior in so a “helpful” pattern change does not flood teams with false positives.
 
 ## Layout
 
-Fixtures live under `testdata/rules/<rule-id>/` in the repository (exact layout follows `DESIGN.md`).
+Fixtures live under:
+
+```text
+testdata/rules/<rule-id>/positive.<ext>
+testdata/rules/<rule-id>/negative.<ext>
+```
+
+Use the **full rule `id`** as the directory name (for example `go.crypto.rsa.generatekey`, `c.openssl.rsa_generate_key_ex`, `js.crypto.createcipheriv.aes`).
+
+| Language | Typical extensions |
+|---|---|
+| C | `.c` |
+| C++ | `.cc` / `.cpp` |
+| JavaScript | `.js` |
+| TypeScript | `.ts` (still exercises the `javascript` pack via alias) |
+| Go | `.go` |
+| Python | `.py` |
+| Java | `.java` |
+
+### Flagship Go example (ships today)
+
+Positive — must produce a finding for `go.crypto.rsa.generatekey`:
+
+```go
+package positive
+
+import (
+	"crypto/rand"
+	"crypto/rsa"
+)
+
+func F() { rsa.GenerateKey(rand.Reader, 2048) }
+```
+
+Negative — must not:
+
+```go
+package negative
+
+// rsa.GenerateKey is only mentioned in a comment.
+func F() {}
+```
+
+### What good C / JS negatives look like
+
+Mirror the [Adding a rule](/detectors/adding-a-rule) walkthroughs:
+
+- **C:** `RSA_generate_key_ex` only in a `/* … */` comment, or a user function coincidentally named similarly that is not OpenSSL.
+- **JS:** `createCipheriv` only in a `//` comment, or a local helper with the same name that is not `crypto.createCipheriv`.
+
+Positive fixtures should be minimal and real — one clear call site, no unrelated crypto noise that makes golden diffs ambiguous.
 
 ## Commands
 
 ```bash
-make lint-rules
-make test
-make check   # fmt + lint + test — what CI runs
+make lint-rules   # load packs, unique IDs, fixture smoke check
+make test         # full suite with -race
+make check        # fmt + lint + test — what CI runs
 ```
 
-Regenerate goldens deliberately with `make golden` and review the diff — never blind-accept.
+Regenerate goldens deliberately:
+
+```bash
+make golden
+```
+
+Review the diff. Never blind-accept golden updates — they encode the inventory contract.
+
+## What `lint-rules` enforces today
+
+`make lint-rules` runs:
+
+```text
+go test ./internal/rules/ -run 'TestLoadAllRulePacks|TestRuleFixturesExist'
+```
+
+| Check | Behavior |
+|---|---|
+| `TestLoadAllRulePacks` | Loads `rules/`, expects multiple packs, **globally unique** rule IDs, non-empty primitives |
+| `TestRuleFixturesExist` | Asserts the flagship pair `testdata/rules/go.crypto.rsa.generatekey/{positive,negative}.go` |
+
+<Warning>
+  DESIGN.md and contributor docs state that **every** rule should have positive and negative fixtures. As implemented, automated lint only requires the Go RSA pair. Treat full fixture coverage as the contribution standard anyway — especially for new C and JavaScript rules — so false-positive regressions are caught before merge.
+</Warning>
+
+Config detector samples may also live under `testdata/rules/` (for example nginx cipher fixtures). Those exercise Go config logic, not YAML source packs.
+
+## Determinism
+
+Same input must produce byte-identical output and stable finding IDs. Fixture-driven tests are part of that contract: no timestamps in IDs, no dependence on map iteration order in emitted results. See [Determinism](/concepts/determinism).
+
+## Load path while developing
+
+1. Edit YAML under `rules/` in a source checkout.
+2. Run `cryptarium scan` from a directory that walks up to that `rules/` tree — on-disk packs win over the embed.
+3. Or pass `--rules /path/to/extra-packs` to append packs (defaults still load).
+
+Invalid packs fail the scan (exit code 2) rather than silently skipping coverage.
 
 ## Related
 
 - [Adding a rule](/detectors/adding-a-rule)
+- [Rule packs](/detectors/rule-packs)
 - [Determinism](/concepts/determinism)
+- [Detectors overview](/detectors/overview)
