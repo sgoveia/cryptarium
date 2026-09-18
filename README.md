@@ -26,10 +26,10 @@ You cannot migrate cryptography you cannot see. NIST, CISA, and CNSA 2.0 all sta
 
 ## At a glance
 
-| Area | Supported today (v0.1) |
+| Area | Supported today (v0.3) |
 |---|---|
 | **Targets** | Local directory, or public HTTPS git URL (shallow clone; requires `git` on `PATH`). SSH / private remotes: roadmap |
-| **Source languages** | Go, Python, JavaScript / TypeScript, Java, C / C++ (tree-sitter + YAML rule packs) |
+| **Source languages** | Go, Python, JavaScript / TypeScript, Java, C / C++ (tree-sitter + YAML rule packs: OpenSSL, libsodium, mbedTLS, Crypto++, Botan, …) |
 | **Dependency manifests** | Go only (`go.mod` + known-library catalog). Not yet: `requirements.txt`, `package-lock.json`, `pom.xml`, `Cargo.toml`, and peers |
 | **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx` (X.509 / PKCS#12) |
 | **Configuration** | nginx TLS cipher suites, SSH algorithm directives, JWT `alg` in auth-ish JSON/YAML |
