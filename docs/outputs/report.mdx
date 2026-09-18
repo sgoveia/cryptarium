@@ -1,20 +1,21 @@
 ---
-title: "Markdown / HTML report"
+title: "Markdown report"
 description: "The human deliverable: prioritized findings with location, classification, target, and priority."
 ---
 
-# Markdown / HTML report
+# Markdown report
 
 **Purpose:** Human-readable migration report — findings grouped by severity with location, classification, target, and priority.
 
-**When to use:** Forward to an architect or migration owner; attach to a change ticket; review interactively as HTML.
+**When to use:** Forward to an architect or migration owner; attach to a change ticket.
 
 ## Example
 
 ```bash
 cryptarium scan . --format markdown --output CRYPTO-REPORT.md
-cryptarium scan . --format html --output CRYPTO-REPORT.html
 ```
+
+Markdown is the default format when `--format` is omitted. HTML output is not implemented yet.
 
 ## How to read it
 

@@ -1,16 +1,16 @@
 ---
 title: "cryptarium scan"
-description: "Scan a local path for cryptography and emit CBOM, SARIF, or a migration report."
+description: "Scan a local path or public HTTPS git URL for cryptography and emit CBOM, SARIF, or a migration report."
 ---
 
 # cryptarium scan
 
-**Purpose:** Walk a repository path, run all detectors, correlate, classify, score, and write requested outputs.
+**Purpose:** Resolve the target (local path or public HTTPS git URL), walk the tree, run all detectors, correlate, classify, score, and write requested outputs.
 
 ## Synopsis
 
 ```bash
-cryptarium scan <path> [flags]
+cryptarium scan [flags] <path|git-url>
 ```
 
 ## Worked example
@@ -18,7 +18,11 @@ cryptarium scan <path> [flags]
 <CodeGroup>
 
 ```bash
+# Local path
 cryptarium scan .
+
+# Public HTTPS repository (requires git on PATH)
+cryptarium scan https://github.com/OWNER/REPO
 
 cryptarium scan ./services/payments \
   --format markdown \
@@ -39,7 +43,9 @@ cryptarium scan ./services/payments \
 
 ## Notes
 
-- Remote git URLs may appear in older README examples; if the installed CLI rejects them, scan a local checkout instead.
+- Public HTTPS remotes are shallow-cloned (`git clone --depth 1 --single-branch`) into a temp directory, scanned, then removed. `git` must be on `PATH`.
+- SSH and private/authenticated remotes are not supported yet (roadmap). Use an HTTPS URL for public repos, or clone privately yourself and pass a local path.
+- Finding paths are relative to the scan root; report metadata keeps the original URL or path as the target.
 - Unparseable files produce warnings — they are not silently skipped.
 
 ## Related

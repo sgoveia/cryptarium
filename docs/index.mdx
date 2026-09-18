@@ -7,24 +7,35 @@ description: "Cryptographic discovery and CBOM generation for the post-quantum t
 
 **Cryptographic discovery and CBOM generation for the post-quantum transition.**
 
-One CLI. Four evidence sources. Correlated findings. Standards-based CBOM, SARIF, and a prioritized migration report.
+A Go-based CLI that scans a **local path** or **public HTTPS git URL**, inventoring cryptography across four evidence sources and emitting a CycloneDX CBOM, SARIF, and a prioritized migration report.
 
 <CardGroup cols={4}>
   <Card title="Source" icon="code" href="/concepts/evidence-sources">
     Rule-pack detection over parsed source (tree-sitter).
   </Card>
   <Card title="Dependencies" icon="cubes" href="/concepts/evidence-sources">
-    Manifest and lockfile crypto-library inventory.
+    Go `go.mod` against a known-library catalog (v0.2).
   </Card>
   <Card title="Certificates" icon="certificate" href="/concepts/evidence-sources">
-    X.509 and key metadata — algorithm, size, curve, validity.
+    X.509 / PKCS#12 metadata — algorithm, size, curve, validity.
   </Card>
   <Card title="Configuration" icon="sliders" href="/concepts/evidence-sources">
-    TLS, SSH, JWT, and related crypto settings.
+    nginx TLS suites, SSH algorithms, JWT `alg`.
   </Card>
 </CardGroup>
 
-`cryptarium` finds cryptography in source, dependencies, certificates, and configuration; classifies each use by quantum exposure; and emits a CycloneDX CBOM plus a prioritized migration report. Unlike single-source scanners, it correlates all four evidence sources so a finding is a linked picture — not four disconnected lists.
+Unlike single-source scanners, it correlates all four evidence sources so a finding is a linked picture, not four disconnected lists.
+
+## At a glance
+
+| Area | Supported today (v0.2) |
+|---|---|
+| **Targets** | Local directory, or public HTTPS git URL (shallow clone; requires `git` on `PATH`). SSH / private remotes: roadmap |
+| **Source languages** | Go, Python, JavaScript / TypeScript, Java, C / C++ |
+| **Dependency manifests** | Go only (`go.mod`) |
+| **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx` |
+| **Outputs** | Markdown (default), JSON, CycloneDX CBOM 1.6+, SARIF |
+| **CI** | GitHub Action; `--fail-on` |
 
 <CardGroup cols={3}>
   <Card title="Install" icon="download" href="/install">

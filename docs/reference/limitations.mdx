@@ -1,6 +1,6 @@
 ---
 title: "Limitations & roadmap"
-description: "Honest scope boundaries for v0.1 and what comes next."
+description: "Honest scope boundaries for v0.2 and what comes next."
 ---
 
 # Limitations & roadmap
@@ -9,13 +9,16 @@ description: "Honest scope boundaries for v0.1 and what comes next."
 
 - Static analysis only — no claim of completeness for runtime or wire-negotiated crypto
 - Not a correctness auditor (padding, IV reuse, side channels)
+- Dependency manifests: **Go (`go.mod`) only**; other ecosystems are not scanned yet
+- Certificates: no `.jks` or OpenSSH private-key parsing yet
+- Remote targets: **public HTTPS only**; SSH and private/authenticated remotes are roadmap
 - Binary / firmware analysis: roadmap
 - Runtime / network TLS scanning: roadmap
 - Container images and multi-repo aggregation: roadmap
 - Full declarative policy engine: early / evolving
 - AI-assisted triage: Phase 4; annotate-only when present; off by default
 
-## Build plan (from README)
+## Build plan
 
 | Phase | Focus | Status |
 |---|---|---|
@@ -25,7 +28,7 @@ description: "Honest scope boundaries for v0.1 and what comes next."
 | 3 | Risk scoring; SARIF; GitHub Action | Done |
 | 4 | AI-assisted triage; multi-repo; containers | Open |
 
-Longer roadmap includes filesystem/container scanning, runtime/network discovery, binary and firmware analysis, org-wide aggregation, cloud KMS/HSM discovery, richer policy/exceptions, and additional CI/GRC exporters.
+Near-term: additional dependency ecosystems, deeper rule packs, and SSH / private remote scanning. Longer roadmap includes filesystem/container scanning, runtime/network discovery, binary analysis, org-wide aggregation, cloud KMS/HSM discovery, richer policy/exceptions, and additional CI/GRC exporters.
 
 ## Related
 

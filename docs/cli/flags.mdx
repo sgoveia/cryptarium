@@ -7,22 +7,28 @@ description: "Scan flags, output controls, and process exit codes."
 
 **Purpose:** Control formats, filters, policy thresholds, and determinism for `cryptarium scan`.
 
+## Usage
+
+```
+cryptarium scan [flags] <path|git-url>
+```
+
 ## Common flags
 
 | Flag | Description |
 |---|---|
-| `--format` | Output format: `json`, `cbom`, `sarif`, `markdown`, `html` (repeatable) |
-| `--output` | Output path or directory |
-| `--rules` | Custom rule-pack path |
-| `--exclude` | Path exclude patterns |
-| `--include-tests` | Include test files in source detection |
-| `--fail-on` | Exit non-zero when findings meet or exceed this severity (`critical`, `high`, …) |
-| `--policy` | Policy file path (early / evolving) |
-| `--concurrency` | Worker concurrency |
-| `--deterministic` | Force deterministic output behavior |
-| `-v` | Verbose logging |
+| `--format` | Output format: `json`, `cbom`, `sarif`, `markdown` (repeatable). `html` may appear in `--help` but is not implemented yet |
+| `--output` | Output path, `-` for stdout, or a directory when emitting multiple formats |
+| `--rules` | Additional rule-pack directory (parsed; wiring may still evolve) |
+| `--exclude` | Glob to exclude (parsed; wiring may still evolve) |
+| `--include-tests` | Include test files and fixtures at normal scoring (parsed; wiring may still evolve) |
+| `--fail-on` | Fail when priority reaches `critical`, `high`, `medium`, `low`, or `none` (default) |
+| `--policy` | Policy file path (stub / evolving) |
+| `--concurrency` | Worker count (default: NumCPU) |
+| `--deterministic` | Suppress timestamps and machine-specific metadata |
+| `-v` / `--verbose` | Verbose logging |
 
-Exact flag availability can evolve before 1.0 — run `cryptarium scan --help` on your installed version.
+Run `cryptarium scan --help` on your installed version for the authoritative list.
 
 ## Exit codes
 
@@ -30,7 +36,7 @@ Exact flag availability can evolve before 1.0 — run `cryptarium scan --help` o
 |---|---|
 | `0` | Success (no threshold breach) |
 | `1` | Findings met or exceeded `--fail-on` |
-| `2` | Scan error |
+| `2` | Scan error (bad target, clone failure, invalid rules) |
 
 ## Related
 

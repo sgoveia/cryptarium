@@ -7,11 +7,17 @@ description: "Documentation-facing release notes. See GitHub Releases for full n
 
 Track tagged releases on [GitHub Releases](https://github.com/sgoveia/cryptarium/releases).
 
+## v0.2.0 — public HTTPS remote scan
+
+- Scan public HTTPS git URLs via shallow `git clone` (requires `git` on `PATH`)
+- SSH and private/authenticated remotes remain roadmap
+- Docs and install pins updated for v0.2.0
+
 ## v0.1.x — inventory complete
 
 - Four detectors (source, dependencies, certificates, configuration)
 - Correlation, classification, and four-axis risk scoring
-- Outputs: CycloneDX CBOM, SARIF, Markdown/HTML, JSON
+- Outputs: CycloneDX CBOM, SARIF, Markdown, JSON
 - GitHub Action with optional SARIF upload and `--fail-on`
 
 Interfaces may still evolve before 1.0.

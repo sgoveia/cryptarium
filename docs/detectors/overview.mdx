@@ -9,10 +9,10 @@ Detectors extract cryptographic evidence. They do not classify quantum exposure 
 
 | Detector | Input | Output signal |
 |---|---|---|
-| Source | Parsed source via rule packs | Call sites, primitives, parameters |
-| Dependencies | Manifests / lockfiles | Crypto libraries present |
-| Certificates | PEM/DER/P12/JKS/SSH key material | Algorithms, sizes, curves, validity (metadata only) |
-| Configuration | TLS/SSH/JWT and related config | Configured suites, versions, algorithms |
+| Source | Parsed source via rule packs (Go, Python, JS/TS, Java, C/C++) | Call sites, primitives, parameters |
+| Dependencies | `go.mod` + known-library catalog | Crypto libraries present (medium confidence) |
+| Certificates | PEM/DER/PKCS#12 (`.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx`) | Algorithms, sizes, curves, validity (metadata only) |
+| Configuration | nginx TLS suites, SSH algorithms, JWT `alg` | Configured suites and algorithms |
 
 ## Design constraints
 

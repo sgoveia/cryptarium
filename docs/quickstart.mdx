@@ -16,10 +16,16 @@ go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.2.0
 
 Pre-built binaries are attached to [GitHub Releases](https://github.com/sgoveia/cryptarium/releases). See [Install](/install) for all options.
 
+Remote HTTPS scans also need `git` on your `PATH`.
+
 ## 2. Scan
 
 ```bash
+# Local checkout
 cryptarium scan .
+
+# Public HTTPS git repository
+cryptarium scan https://github.com/OWNER/REPO
 ```
 
 ## 3. Emit the formats you need
