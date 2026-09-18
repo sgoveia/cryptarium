@@ -17,14 +17,14 @@ echo $?   # 1 if any critical findings; 0 otherwise; 2 on scan error
 ## GitHub Actions
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.1.1
+- uses: sgoveia/cryptarium@v0.1.2
   with:
     path: .
     fail-on: critical
     upload-sarif: true
 ```
 
-Start with `critical`, then tighten to `high` once the backlog is under control. Pair with [SARIF upload](/guides/sarif-upload) so failures are inspectable in the Security tab.
+Start with `critical`, then tighten to `high` once the backlog is under control. Pair with [SARIF upload](/guides/sarif-upload) so failures are inspectable under Security → Code scanning.
 
 ## Related
 

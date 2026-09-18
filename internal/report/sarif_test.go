@@ -49,6 +49,12 @@ func TestWriteSARIF(t *testing.T) {
 	if !strings.Contains(raw, `"confidence"`) {
 		t.Fatal("confidence property bag missing")
 	}
+	if !strings.Contains(raw, `"findingId"`) {
+		t.Fatal("findingId property missing")
+	}
+	if strings.Contains(raw, `"partialFingerprints"`) {
+		t.Fatal("partialFingerprints must be omitted for GitHub upload-sarif fingerprinting")
+	}
 	var doc map[string]any
 	if err := json.Unmarshal(buf.Bytes(), &doc); err != nil {
 		t.Fatalf("invalid json: %v", err)

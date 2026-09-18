@@ -10,7 +10,7 @@ description: "Run cryptarium in GitHub Actions with optional SARIF upload."
 ## Example
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.1.1
+- uses: sgoveia/cryptarium@v0.1.2
   with:
     path: .
     fail-on: critical
@@ -23,6 +23,6 @@ description: "Run cryptarium in GitHub Actions with optional SARIF upload."
 |---|---|
 | `path` | Repository path to scan |
 | `fail-on` | Severity threshold for a failing job |
-| `upload-sarif` | Upload results to the Security tab when true |
+| `upload-sarif` | Upload results to Security → Code scanning when true |
 
 Pin the Action to a tagged release. See [Uploading SARIF](/guides/sarif-upload) and [CI with --fail-on](/guides/ci-fail-on).

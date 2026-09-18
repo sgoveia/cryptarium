@@ -103,10 +103,11 @@ func scoredToSARIFResult(s model.ScoredAsset) sarifResult {
 		Message: sarifMessage{
 			Text: msg,
 		},
-		PartialFingerprints: map[string]string{
-			"primaryLocationLineHash": s.ID,
-		},
+		// Omit partialFingerprints: GitHub's upload-sarif action computes
+		// primaryLocationLineHash from file content. Putting the finding ID
+		// there caused inconsistent-fingerprint warnings and unstable alerts.
 		Properties: map[string]any{
+			"findingId":       s.ID,
 			"confidence":      string(s.Evidence.Confidence),
 			"quantumClass":    string(s.QuantumClass),
 			"riskScore":       s.Risk.Score,
