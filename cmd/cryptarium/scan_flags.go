@@ -33,7 +33,7 @@ func newScanFlags() *scanFlags {
 	s.fs.SetOutput(ioDiscard{})
 	s.fs.Var(&s.format, "format", "output format: json|cbom|sarif|markdown|html (repeatable)")
 	s.fs.StringVar(&s.output, "output", "", "output path, or \"-\" for stdout")
-	s.fs.Var(&s.rules, "rules", "additional rule-pack directory (repeatable)")
+	s.fs.Var(&s.rules, "rules", "additional rule-pack directory to load after defaults (repeatable)")
 	s.fs.Var(&s.exclude, "exclude", "glob to exclude (repeatable)")
 	s.fs.BoolVar(&s.includeTests, "include-tests", false, "include test files and fixtures at normal scoring")
 	s.fs.StringVar(&s.failOn, "fail-on", "none", "fail when priority reaches: critical|high|medium|low|none")

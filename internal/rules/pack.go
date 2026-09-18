@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 // RulePack is a YAML rule pack for source detection (DESIGN.md §5).
@@ -44,28 +42,7 @@ func LoadRulePack(path string) (*RulePack, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read rule pack %s: %w", path, err)
 	}
-	var pack RulePack
-	if err := yaml.Unmarshal(data, &pack); err != nil {
-		return nil, fmt.Errorf("parse rule pack %s: %w", path, err)
-	}
-	if pack.ID == "" {
-		return nil, fmt.Errorf("rule pack %s: missing id", path)
-	}
-	if pack.Language == "" {
-		return nil, fmt.Errorf("rule pack %s: missing language", path)
-	}
-	for i, r := range pack.Rules {
-		if r.ID == "" {
-			return nil, fmt.Errorf("rule pack %s: rule %d missing id", path, i)
-		}
-		if r.Primitive == "" {
-			return nil, fmt.Errorf("rule pack %s: rule %s missing primitive", path, r.ID)
-		}
-		if r.Match.Kind == "" {
-			return nil, fmt.Errorf("rule pack %s: rule %s missing match.kind", path, r.ID)
-		}
-	}
-	return &pack, nil
+	return parseRulePack(data, path)
 }
 
 // LoadRulePacksDir loads all *.yaml rule packs under dir (non-recursive for
@@ -100,6 +77,8 @@ func LoadRulePacksDir(dir string) ([]*RulePack, error) {
 }
 
 // FindDefaultRulesDir walks up from cwd looking for rules/.
+// Returns ErrNotFound when no on-disk rules/ exists; callers that need packs
+// should then use LoadDefaultRulePacks / LoadEmbeddedRulePacks.
 func FindDefaultRulesDir() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -117,5 +96,5 @@ func FindDefaultRulesDir() (string, error) {
 		}
 		dir = parent
 	}
-	return "", fmt.Errorf("rules/ directory not found from %s", mustGetwd())
+	return "", fmt.Errorf("%w: rules/ directory not found from %s", ErrNotFound, mustGetwd())
 }

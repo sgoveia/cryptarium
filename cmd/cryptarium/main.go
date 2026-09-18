@@ -97,22 +97,25 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	}
 	defer resolved.Cleanup()
 
+	// Prefer on-disk rules/ when present (dev / local edits). Empty paths make
+	// the detectors fall back to packs embedded in the binary (release / go install).
 	catalog, err := rules.FindDefaultCatalog()
-	if err != nil {
+	if err != nil && !errors.Is(err, rules.ErrNotFound) {
 		writef(stderr, "scan: %v\n", err)
 		return exitScanError
 	}
 	rulesDir, err := rules.FindDefaultRulesDir()
-	if err != nil {
+	if err != nil && !errors.Is(err, rules.ErrNotFound) {
 		writef(stderr, "scan: %v\n", err)
 		return exitScanError
 	}
 
 	result, err := pipeline.Run(context.Background(), pipeline.Options{
-		Root:        resolved.Root,
-		Concurrency: fs.concurrency,
-		CatalogPath: catalog,
-		RulesDir:    rulesDir,
+		Root:           resolved.Root,
+		Concurrency:    fs.concurrency,
+		CatalogPath:    catalog,
+		RulesDir:       rulesDir,
+		ExtraRulesDirs: []string(fs.rules),
 	})
 	if err != nil {
 		writef(stderr, "scan: %v\n", err)

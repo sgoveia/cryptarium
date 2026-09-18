@@ -9,6 +9,8 @@ Most source coverage is declarative YAML under `rules/`, not hardcoded Go.
 
 **Why this matters:** Adding a library or language idiom should not require an engine change. Rule packs are the community contribution surface.
 
+Release binaries and `go install` builds embed the default packs, so a standalone binary can scan without a source checkout. When an on-disk `rules/` tree is found by walking up from the working directory, it overrides the embed (useful while editing packs). Use `--rules` to load additional directories after the defaults.
+
 ## What a rule declares
 
 Typical fields (see `DESIGN.md` in the repository for the authoritative schema):

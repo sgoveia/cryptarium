@@ -24,10 +24,14 @@ import (
 type Options struct {
 	Root        string
 	Concurrency int
-	// CatalogPath overrides the default rules/libraries/catalog.yaml for deps.
+	// CatalogPath overrides the default library catalog for deps.
+	// Empty uses LoadDefaultCatalog (on-disk rules/ or embedded).
 	CatalogPath string
 	// RulesDir overrides the default rules/ directory for source packs.
+	// Empty uses LoadDefaultRulePacks (on-disk rules/ or embedded).
 	RulesDir string
+	// ExtraRulesDirs are additional rule-pack directories (--rules), loaded after defaults.
+	ExtraRulesDirs []string
 }
 
 // Result is the deterministic scan output before reporting.
@@ -125,8 +129,8 @@ func activeDetectors(opt Options) []detector.Detector {
 			}
 			seenDeps = true
 		case "source":
-			if opt.RulesDir != "" {
-				out = append(out, newSourceWithRules(opt.RulesDir))
+			if opt.RulesDir != "" || len(opt.ExtraRulesDirs) > 0 {
+				out = append(out, newSourceConfigured(opt.RulesDir, opt.ExtraRulesDirs))
 			} else {
 				out = append(out, d)
 			}
@@ -138,8 +142,8 @@ func activeDetectors(opt Options) []detector.Detector {
 	if opt.CatalogPath != "" && !seenDeps {
 		out = append(out, deps.NewWithCatalog(opt.CatalogPath))
 	}
-	if opt.RulesDir != "" && !seenSource {
-		out = append(out, newSourceWithRules(opt.RulesDir))
+	if (opt.RulesDir != "" || len(opt.ExtraRulesDirs) > 0) && !seenSource {
+		out = append(out, newSourceConfigured(opt.RulesDir, opt.ExtraRulesDirs))
 	}
 	return out
 }

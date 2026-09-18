@@ -27,7 +27,8 @@ func init() {
 
 // Detector matches YAML rule packs against parsed source ASTs.
 type Detector struct {
-	rulesDir string
+	rulesDir  string
+	extraDirs []string
 
 	mu     sync.Mutex
 	packs  []*rules.RulePack
@@ -35,7 +36,8 @@ type Detector struct {
 	loaded bool
 }
 
-// New returns a source detector that loads packs from rules/ by default.
+// New returns a source detector that loads packs via LoadDefaultRulePacks
+// (on-disk rules/ when present, otherwise packs embedded in the binary).
 func New() *Detector {
 	return &Detector{}
 }
@@ -43,6 +45,15 @@ func New() *Detector {
 // NewWithRulesDir returns a detector that loads packs from dir.
 func NewWithRulesDir(dir string) *Detector {
 	return &Detector{rulesDir: dir}
+}
+
+// NewConfigured returns a detector that loads packs from rulesDir when
+// non-empty, otherwise LoadDefaultRulePacks, then appends packs from extra.
+func NewConfigured(rulesDir string, extra ...string) *Detector {
+	return &Detector{
+		rulesDir:  rulesDir,
+		extraDirs: append([]string(nil), extra...),
+	}
 }
 
 // Name returns the stable detector name.
@@ -139,19 +150,27 @@ func (d *Detector) ensurePacks() error {
 		return d.err
 	}
 	d.loaded = true
-	dir := d.rulesDir
-	if dir == "" {
-		var err error
-		dir, err = rules.FindDefaultRulesDir()
-		if err != nil {
-			d.err = err
-			return err
-		}
+	var (
+		packs []*rules.RulePack
+		err   error
+	)
+	switch {
+	case d.rulesDir != "":
+		packs, err = rules.LoadRulePacksDir(d.rulesDir)
+	default:
+		packs, err = rules.LoadDefaultRulePacks()
 	}
-	packs, err := rules.LoadRulePacksDir(dir)
 	if err != nil {
 		d.err = err
 		return err
+	}
+	for _, extra := range d.extraDirs {
+		more, err := rules.LoadRulePacksDir(extra)
+		if err != nil {
+			d.err = fmt.Errorf("load additional rules %s: %w", extra, err)
+			return d.err
+		}
+		packs = append(packs, more...)
 	}
 	d.packs = packs
 	return nil

@@ -28,11 +28,11 @@ type Detector struct {
 	loaded      bool
 }
 
-// New returns a deps detector using the default catalog path relative to the
-// process working directory (rules/libraries/catalog.yaml). Prefer
-// NewWithCatalog in tests and when the scan root differs from the module root.
+// New returns a deps detector using LoadDefaultCatalog (on-disk rules/ when
+// present, otherwise the catalog embedded in the binary). Prefer
+// NewWithCatalog in tests and when an explicit catalog path is required.
 func New() *Detector {
-	return &Detector{catalogPath: filepath.Join("rules", "libraries", "catalog.yaml")}
+	return &Detector{}
 }
 
 // NewWithCatalog returns a deps detector that loads libraries from catalogPath.
@@ -84,7 +84,15 @@ func (d *Detector) ensureCatalog() error {
 		return d.catalogErr
 	}
 	d.loaded = true
-	libs, err := rules.LoadLibraryCatalog(d.catalogPath)
+	var (
+		libs []rules.LibraryEntry
+		err  error
+	)
+	if d.catalogPath != "" {
+		libs, err = rules.LoadLibraryCatalog(d.catalogPath)
+	} else {
+		libs, err = rules.LoadDefaultCatalog()
+	}
 	if err != nil {
 		d.catalogErr = err
 		return err

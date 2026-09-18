@@ -19,7 +19,7 @@ cryptarium scan [flags] <path|git-url>
 |---|---|
 | `--format` | Output format: `json`, `cbom`, `sarif`, `markdown` (repeatable). `html` may appear in `--help` but is not implemented yet |
 | `--output` | Output path, `-` for stdout, or a directory when emitting multiple formats |
-| `--rules` | Additional rule-pack directory (parsed; wiring may still evolve) |
+| `--rules` | Additional rule-pack directory loaded after the defaults (repeatable) |
 | `--exclude` | Glob to exclude (parsed; wiring may still evolve) |
 | `--include-tests` | Include test files and fixtures at normal scoring (parsed; wiring may still evolve) |
 | `--fail-on` | Fail when priority reaches `critical`, `high`, `medium`, `low`, or `none` (default) |

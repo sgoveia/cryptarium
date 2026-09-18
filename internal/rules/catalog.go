@@ -3,8 +3,6 @@ package rules
 import (
 	"fmt"
 	"os"
-
-	"gopkg.in/yaml.v3"
 )
 
 // LibraryEntry describes a known cryptographic dependency from the catalog.
@@ -26,20 +24,5 @@ func LoadLibraryCatalog(path string) ([]LibraryEntry, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read library catalog %s: %w", path, err)
 	}
-	var file catalogFile
-	if err := yaml.Unmarshal(data, &file); err != nil {
-		return nil, fmt.Errorf("parse library catalog %s: %w", path, err)
-	}
-	for i, lib := range file.Libraries {
-		if lib.Name == "" {
-			return nil, fmt.Errorf("library catalog %s: entry %d missing name", path, i)
-		}
-		if lib.Ecosystem == "" {
-			return nil, fmt.Errorf("library catalog %s: %s missing ecosystem", path, lib.Name)
-		}
-		if len(lib.Primitives) == 0 {
-			return nil, fmt.Errorf("library catalog %s: %s missing primitives", path, lib.Name)
-		}
-	}
-	return file.Libraries, nil
+	return parseLibraryCatalog(data, path)
 }

@@ -7,6 +7,14 @@ description: "Documentation-facing release notes. See GitHub Releases for full n
 
 Track tagged releases on [GitHub Releases](https://github.com/sgoveia/cryptarium/releases).
 
+## v0.2.1 — embedded default rule packs
+
+- Embed default `rules/` (source packs + library catalog) in the binary via `go:embed`
+- Scans work from any working directory with release binaries and `go install` — no adjacent source checkout required
+- On-disk `rules/` found by walking up from cwd still takes precedence (local edits without rebuild)
+- `--rules` loads additional rule-pack directories after the defaults
+- Fixes `scan: rules/libraries/catalog.yaml not found` for standalone binaries
+
 ## v0.2.0 — public HTTPS remote scan
 
 - Scan public HTTPS git URLs via shallow `git clone` (requires `git` on `PATH`)

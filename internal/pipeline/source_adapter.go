@@ -5,6 +5,6 @@ import (
 	"github.com/sgoveia/cryptarium/internal/detector/source"
 )
 
-func newSourceWithRules(dir string) detector.Detector {
-	return source.NewWithRulesDir(dir)
+func newSourceConfigured(rulesDir string, extra []string) detector.Detector {
+	return source.NewConfigured(rulesDir, extra...)
 }

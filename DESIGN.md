@@ -187,6 +187,8 @@ Detectors register themselves in an init-time registry. Adding one is a new pack
 
 The primary contribution surface. A rule pack is YAML in `rules/`, validated at load time against a JSON Schema in `rules/schema.json`. Adding a library or language idiom must never require Go changes.
 
+**Embedded defaults (v0.2.1+):** release binaries and `go install` builds embed the `rules/` tree via `go:embed` (`rules/embed.go`). At scan time the loader prefers an on-disk `rules/` found by walking up from the working directory (so local edits apply without rebuild), then falls back to the embedded packs and `libraries/catalog.yaml`. A standalone binary therefore works from any directory; a source checkout is not required beside the binary.
+
 ```yaml
 # rules/go/stdlib-crypto.yaml
 id: go-stdlib-crypto
@@ -467,6 +469,7 @@ Tracked here rather than decided prematurely. An agent encountering one of these
 ### Decided
 
 - **tree-sitter binding — WASM / no-CGO.** Chosen before Phase 2 because easy CI and `go install` / multi-platform releases are product requirements. **Locked implementation:** [`github.com/odvcencio/gotreesitter`](https://github.com/odvcencio/gotreesitter) (Apache-2.0 / see module license) — a pure-Go tree-sitter runtime that embeds grammar blobs and satisfies `CGO_ENABLED=0`. A bake-off against `github.com/malivvan/tree-sitter` (wazero + official WASM) found that module only ships C/C++ grammars today, so it could not parse Go. Do **not** take CGO bindings (`smacker/go-tree-sitter` et al.) without revisiting this decision. Regex fallback remains for languages without a loaded grammar, at lowered confidence.
+- **Default rule packs embedded in the binary.** Chosen in v0.2.1 after release binaries failed with `rules/libraries/catalog.yaml not found` when run outside a source checkout. YAML under `rules/` remains the contribution surface; `go:embed` ships the same files. On-disk `rules/` still wins when present so contributors can edit packs without rebuilding.
 
 ## 18. References
 

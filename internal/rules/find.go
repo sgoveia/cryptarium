@@ -8,6 +8,8 @@ import (
 
 // FindDefaultCatalog walks up from the working directory looking for
 // rules/libraries/catalog.yaml (the repo-root contribution surface).
+// Returns ErrNotFound when no on-disk catalog exists; callers that need a
+// catalog should then use LoadDefaultCatalog / LoadEmbeddedCatalog.
 func FindDefaultCatalog() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -25,7 +27,7 @@ func FindDefaultCatalog() (string, error) {
 		}
 		dir = parent
 	}
-	return "", fmt.Errorf("rules/libraries/catalog.yaml not found from %s", mustGetwd())
+	return "", fmt.Errorf("%w: rules/libraries/catalog.yaml not found from %s", ErrNotFound, mustGetwd())
 }
 
 func mustGetwd() string {
