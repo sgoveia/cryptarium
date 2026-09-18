@@ -1,69 +1,48 @@
 ---
 title: "Detectors overview"
-description: "Four detector kinds extract cryptographic evidence; rule packs drive source coverage."
+description: "Cryptarium finds crypto in source, deps, certs, and config. Source coverage is mostly YAML rules."
 ---
 
 # Detectors overview
 
-Detectors extract cryptographic **evidence**. They do not classify quantum exposure — that is the classifier's job after correlation and scoring.
+Cryptarium looks for cryptography in four places. Source coverage is mostly YAML [rule packs](/detectors/rule-packs), not hardcoded Go.
 
-**Why this matters:** A rule pack that claims "RSA is broken" inside YAML would mix inventory with policy. Cryptarium keeps those layers apart so the CBOM stays reproducible and every quantum claim stays citation-backed in Go.
+**What you will do next:** skim this page, then [add a rule](/detectors/adding-a-rule) when you need a new API covered.
 
-## The four detectors
+## The four places
 
-| Detector | Input | What it emits | Confidence ceiling |
-|---|---|---|---|
-| **Source** | Parsed source via YAML [rule packs](/detectors/rule-packs) (Go, Python, JS/TS, Java, C/C++) | Call sites, primitives, parameters, rule IDs | Up to `high` when the AST match establishes primitive *and* parameters |
-| **Dependencies** | Lockfiles / manifests against [`rules/libraries/catalog.yaml`](https://github.com/sgoveia/cryptarium/blob/main/rules/libraries/catalog.yaml) | Crypto libraries present | **Medium** at most — presence is not proof of use |
-| **Certificates** | PEM/DER/PKCS#12 (`.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx`) | Algorithms, sizes, curves, validity (**metadata only**) | High when the cert parses cleanly |
-| **Configuration** | nginx TLS suites, SSH algorithms, JWT `alg`, and similar | Configured suites and algorithms | Varies; one config line can yield several findings |
+| Detector | Looks at | You get |
+|---|---|---|
+| **Source** | Go, Python, JS/TS, Java, C/C++ via rule packs | Call sites, algorithm names, parameters |
+| **Dependencies** | `go.mod` + library catalog | Crypto libraries present (not proof of use) |
+| **Certificates** | PEM, DER, PKCS#12 files | Algorithms, sizes, curves, validity (metadata only) |
+| **Configuration** | nginx TLS, SSH, JWT `alg`, similar | Configured suites and algorithms |
 
-## How a finding is born
+<Tip>
+  A library listed in `go.mod` is medium confidence at most until it correlates with a source finding. See [Confidence](/concepts/confidence).
+</Tip>
 
-```mermaid
-flowchart LR
-  YAML["rules/*.yaml"] --> Load["Load / embed"]
-  Load --> Source["source detector"]
-  Catalog["libraries/catalog.yaml"] --> Deps["deps detector"]
-  Certs["certs / config"] --> Other["certs + config detectors"]
-  Source --> Findings["CryptoFinding"]
-  Deps --> Findings
-  Other --> Findings
-  Findings --> Correlate["correlate"]
-  Correlate --> Classify["classify"]
-  Classify --> Score["score"]
-  Score --> Out["CBOM / SARIF / report"]
-```
+## From file to report
 
-1. **Collect** files from the scan target.
-2. **Detect** — each detector that `Handles` a file returns zero or more `CryptoFinding` values (path, line, primitive, parameters, evidence, rule ID, confidence).
-3. **Correlate** — link related findings (for example a `go.mod` library and a matching source call). Correlation can raise confidence; it never invents a new finding or rewrites a primitive.
-4. **Classify** — map the canonical primitive (and parameters) to Broken / Weakened / Safe-PQC / Unknown. See [Quantum classification](/concepts/classification).
-5. **Score** — turn class + longevity/exposure/agility heuristics into a priority. See [Risk scoring](/concepts/scoring).
-6. **Report** — CBOM, SARIF, Markdown/HTML, JSON.
+1. **Detect** evidence in those four places.
+2. **Correlate** related hits (for example a dependency and a matching call).
+3. **Classify** quantum risk (Broken / Weakened / Safe / Unknown).
+4. **Score** priority and emit CBOM, SARIF, or a Markdown report.
 
-## Design constraints
+Rules find evidence. They do not decide quantum risk. That stays in the classifier so claims stay citation-backed.
 
-- Prefer AST / structured parsing over regex. Regex is an explicit fallback and **forces `low` confidence**.
-- Never emit key material — metadata and redacted snippets only.
-- Unparseable files must produce warnings; silent omission is the worst inventory bug.
-- Static analysis cannot see runtime algorithm selection, dynamically loaded providers, or what is negotiated on the wire. The inventory must never imply otherwise.
+## Extend coverage
 
-## Rule packs vs Go detectors
-
-Most **source** coverage is declarative YAML under `rules/`. Add a library idiom or API call there first. Write Go only when you need a real parser (certificates), format-aware config logic, or behavior outside the match schema.
-
-| You want to… | Prefer |
+| Goal | Start here |
 |---|---|
-| Detect `RSA_generate_key_ex` or `crypto.createCipheriv` | YAML rule pack |
-| List `golang.org/x/crypto` in `go.mod` | Library catalog |
-| Parse an X.509 certificate | `certs` detector (Go) |
-| Split nginx `ssl_ciphers` into primitives | `config` detector (Go) |
+| New API in source | [Adding a rule](/detectors/adding-a-rule) |
+| How packs load and what fields mean | [Rule packs](/detectors/rule-packs) |
+| Prove a rule with fixtures | [Fixtures & validation](/detectors/fixtures) |
+
+Prefer YAML for a new library call. Prefer a Go detector only for real parsers (certs) or format-aware config.
 
 ## Related
 
-- [Rule packs](/detectors/rule-packs) — field-by-field schema and load path
-- [Adding a rule](/detectors/adding-a-rule) — C/OpenSSL and JavaScript walkthroughs
-- [Fixtures & validation](/detectors/fixtures)
 - [Four evidence sources](/concepts/evidence-sources)
-- [Confidence & unknown](/concepts/confidence)
+- [Correlation](/concepts/correlation)
+- [Quantum classification](/concepts/classification)
