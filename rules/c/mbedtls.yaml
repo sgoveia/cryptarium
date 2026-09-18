@@ -1,0 +1,342 @@
+# mbedTLS C API coverage.
+id: c-mbedtls
+version: 1
+language: c
+description: mbedTLS cryptographic API calls.
+
+rules:
+  - id: c.mbedtls.rsa_gen_key
+    primitive: RSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_rsa_gen_key
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/rsa_8h/"
+
+  - id: c.mbedtls.rsa_pkcs1_encrypt
+    primitive: RSA
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_rsa_pkcs1_encrypt
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/rsa_8h/"
+
+  - id: c.mbedtls.rsa_pkcs1_decrypt
+    primitive: RSA
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_rsa_pkcs1_decrypt
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/rsa_8h/"
+
+  - id: c.mbedtls.rsa_pkcs1_sign
+    primitive: RSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_rsa_pkcs1_sign
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/rsa_8h/"
+
+  - id: c.mbedtls.rsa_pkcs1_verify
+    primitive: RSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_rsa_pkcs1_verify
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/rsa_8h/"
+
+  - id: c.mbedtls.ecdsa_genkey
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_ecdsa_genkey
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/ecdsa_8h/"
+
+  - id: c.mbedtls.ecdsa_write_signature
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_ecdsa_write_signature
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/ecdsa_8h/"
+
+  - id: c.mbedtls.ecdsa_read_signature
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_ecdsa_read_signature
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/ecdsa_8h/"
+
+  - id: c.mbedtls.ecdsa_sign
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_ecdsa_sign
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/ecdsa_8h/"
+
+  - id: c.mbedtls.ecdsa_verify
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_ecdsa_verify
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/ecdsa_8h/"
+
+  - id: c.mbedtls.ecdh_gen_public
+    primitive: ECDH
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_ecdh_gen_public
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/ecdh_8h/"
+
+  - id: c.mbedtls.ecdh_compute_shared
+    primitive: ECDH
+    assetType: algorithm
+    functions: [keyexchange]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_ecdh_compute_shared
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/ecdh_8h/"
+
+  - id: c.mbedtls.ecp_gen_key
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_ecp_gen_key
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/ecp_8h/"
+
+  - id: c.mbedtls.aes_setkey_enc
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_aes_setkey_enc
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/aes_8h/"
+
+  - id: c.mbedtls.aes_setkey_dec
+    primitive: AES
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_aes_setkey_dec
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/aes_8h/"
+
+  - id: c.mbedtls.aes_crypt_cbc
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_aes_crypt_cbc
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/aes_8h/"
+
+  - id: c.mbedtls.aes_crypt_ecb
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_aes_crypt_ecb
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/aes_8h/"
+
+  - id: c.mbedtls.gcm_crypt_and_tag
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_gcm_crypt_and_tag
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/gcm_8h/"
+
+  - id: c.mbedtls.gcm_auth_decrypt
+    primitive: AES
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_gcm_auth_decrypt
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/gcm_8h/"
+
+  - id: c.mbedtls.sha256
+    primitive: SHA-256
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_sha256
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/sha256_8h/"
+
+  - id: c.mbedtls.sha256_starts
+    primitive: SHA-256
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_sha256_starts
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/sha256_8h/"
+
+  - id: c.mbedtls.sha512
+    primitive: SHA-512
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_sha512
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/sha512_8h/"
+
+  - id: c.mbedtls.sha512_starts
+    primitive: SHA-512
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_sha512_starts
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/sha512_8h/"
+
+  - id: c.mbedtls.sha1
+    primitive: SHA-1
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_sha1
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/sha1_8h/"
+
+  - id: c.mbedtls.md5
+    primitive: MD5
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_md5
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/md5_8h/"
+
+  - id: c.mbedtls.pk_setup
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [keygen]
+    confidence: low
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_pk_setup
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/pk_8h/"
+
+  - id: c.mbedtls.pk_sign
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [sign]
+    confidence: low
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_pk_sign
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/pk_8h/"
+
+  - id: c.mbedtls.pk_verify
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [verify]
+    confidence: low
+    match:
+      kind: call
+      package: mbedtls
+      symbol: mbedtls_pk_verify
+    references:
+      - "https://mbed-tls.readthedocs.io/en/latest/api/file/pk_8h/"

@@ -1,0 +1,4 @@
+/* crypto_hash_sha512 is only mentioned in a comment. */
+int f(void) {
+  return 0;
+}
