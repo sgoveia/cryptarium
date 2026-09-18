@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -47,14 +48,51 @@ func TestRun_ScanMissingTarget(t *testing.T) {
 	}
 }
 
-func TestRun_ScanGitURLRejected(t *testing.T) {
+func TestRun_ScanSSHURLRejected(t *testing.T) {
 	var stdout, stderr bytes.Buffer
-	code := run([]string{"scan", "https://github.com/example/repo"}, &stdout, &stderr)
+	code := run([]string{"scan", "git@github.com:example/repo.git"}, &stdout, &stderr)
 	if code != exitScanError {
 		t.Fatalf("exit = %d", code)
 	}
-	if !strings.Contains(stderr.String(), "not supported") {
+	if !strings.Contains(stderr.String(), "SSH") {
 		t.Fatalf("stderr=%q", stderr.String())
+	}
+}
+
+func TestRun_ScanRemoteFileURL(t *testing.T) {
+	if _, err := exec.LookPath("git"); err != nil {
+		t.Skip("git not on PATH")
+	}
+	src := t.TempDir()
+	pem := filepath.Join(src, "rsa.pem")
+	// Minimal PEM-looking content is enough for walk; cert detector may warn.
+	if err := os.WriteFile(pem, []byte("not-a-cert\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	runGitCLI(t, src, "init")
+	runGitCLI(t, src, "config", "user.email", "test@example.com")
+	runGitCLI(t, src, "config", "user.name", "test")
+	runGitCLI(t, src, "add", ".")
+	runGitCLI(t, src, "commit", "-m", "init")
+
+	url := "file://" + filepath.ToSlash(src)
+	var stdout, stderr bytes.Buffer
+	code := run([]string{"scan", "--format", "json", "--deterministic", url}, &stdout, &stderr)
+	if code != exitOK {
+		t.Fatalf("exit = %d; stderr=%q", code, stderr.String())
+	}
+	if !strings.Contains(stdout.String(), `"findings"`) {
+		t.Fatalf("expected JSON findings, got %q", stdout.String())
+	}
+}
+
+func runGitCLI(t *testing.T, dir string, args ...string) {
+	t.Helper()
+	cmd := exec.Command("git", args...)
+	cmd.Dir = dir
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("git %v: %v\n%s", args, err, out)
 	}
 }
 

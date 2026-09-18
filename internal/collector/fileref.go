@@ -11,7 +11,7 @@ type FileRef struct {
 	Size int64
 }
 
-// Target is a local directory (or later, a cloned git URL) to scan.
+// Target is a local directory to scan (after Resolve has cloned remotes if needed).
 type Target struct {
 	// Root is the absolute path of the repository or directory root.
 	Root string
