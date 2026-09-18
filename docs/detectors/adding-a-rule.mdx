@@ -21,6 +21,8 @@ Teach cryptarium about a crypto API by editing YAML. You usually do not need to 
 
 Full field list: [Rule packs](/detectors/rule-packs). Fixture layout: [Fixtures](/detectors/fixtures).
 
+Shipped C packs (append new symbols there): `rules/c/openssl.yaml`, `rules/c/libsodium.yaml`, `rules/c/mbedtls.yaml`. C++-only packs: `rules/cpp/cryptopp.yaml`, `rules/cpp/botan.yaml`. Do not re-add OpenSSL under `rules/cpp/`; C++ files already load C packs.
+
 ## Example 1: JavaScript
 
 Append to [`rules/javascript/webcrypto.yaml`](https://github.com/sgoveia/cryptarium/blob/main/rules/javascript/webcrypto.yaml) (also covers TypeScript files):

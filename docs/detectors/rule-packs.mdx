@@ -16,10 +16,22 @@ Hands-on walkthrough: [Adding a rule](/detectors/adding-a-rule).
 | Path | For |
 |---|---|
 | `rules/javascript/` | JS and TypeScript (TS loads JS packs) |
-| `rules/c/` | C (and C++ files also load these) |
-| `rules/cpp/` | C++-only rules |
+| `rules/c/` | C APIs: OpenSSL, libsodium, mbedTLS (C++ files also load these) |
+| `rules/cpp/` | C++-only packs: Crypto++, Botan |
 | `rules/go/`, `rules/python/`, `rules/java/` | Those languages |
 | `rules/libraries/catalog.yaml` | Go modules in `go.mod` (deps detector) |
+
+### Shipped C / C++ packs (v0.3.0)
+
+| Pack | Path | Matches |
+|---|---|---|
+| OpenSSL / libcrypto | `rules/c/openssl.yaml` | RSA, EC/ECDSA/ECDH, DSA/DH, AES, ChaCha20, digests, selected EVP APIs |
+| libsodium | `rules/c/libsodium.yaml` | Sign/box/AEAD/hash helpers (`crypto_sign_*`, `crypto_aead_*`, …) |
+| mbedTLS | `rules/c/mbedtls.yaml` | RSA, ECDSA/ECDH, AES/GCM, digests, polymorphic `mbedtls_pk_*` |
+| Crypto++ | `rules/cpp/cryptopp.yaml` | Distinctive type names (identifier match) |
+| Botan | `rules/cpp/botan.yaml` | Distinctive type names and `create_private_key` |
+
+For C and C++, `match.package` is an **ecosystem tag** (`openssl`, `libsodium`, `mbedtls`, `botan`). Calls are usually unqualified; the tag does not need an import path.
 
 Release binaries ship embedded packs. If you scan from a source checkout, on-disk `rules/` wins so edits apply without rebuilding. `--rules` adds extra directories after the defaults (it does not replace them). See [CLI flags](/cli/flags).
 
@@ -106,7 +118,7 @@ Today the deps detector uses **`go.mod`** and entries with `ecosystem: go`. Pres
     | `package` | Import / qualifier (`crypto`, `openssl`, `crypto/rsa`) |
     | `symbol` | Exact function name |
 
-    For OpenSSL, `package: openssl` works even when C calls have no package prefix.
+    For OpenSSL, libsodium, mbedTLS, and Botan, `package` is an ecosystem tag. Unqualified C/C++ calls still match.
 
     **`kind: identifier`**
 
