@@ -12,7 +12,7 @@ Choose the path that matches your environment.
     Requires [Go 1.26+](https://go.dev/dl/).
 
     ```bash
-    go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.2.1
+    go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.3.0
     ```
 
     Ensure `$(go env GOPATH)/bin` is on your `PATH`, then verify:
@@ -45,7 +45,7 @@ Choose the path that matches your environment.
 For CI, prefer the published Action rather than installing the binary by hand:
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.2.1
+- uses: sgoveia/cryptarium@v0.3.0
   with:
     path: .
     fail-on: critical

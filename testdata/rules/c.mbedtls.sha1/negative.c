@@ -1,0 +1,4 @@
+/* mbedtls_sha1 is only mentioned in a comment. */
+int f(void) {
+  return 0;
+}

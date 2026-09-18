@@ -1,9 +1,11 @@
+# OpenSSL / libcrypto C API coverage.
 id: c-openssl
-version: 1
+version: 2
 language: c
-description: OpenSSL and common C cryptographic API calls.
+description: OpenSSL and libcrypto C cryptographic API calls.
 
 rules:
+  # --- RSA ---
   - id: c.openssl.rsa_generate_key_ex
     primitive: RSA
     assetType: algorithm
@@ -14,7 +16,560 @@ rules:
       package: openssl
       symbol: RSA_generate_key_ex
     references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_generate_key_ex.html"
+
+  - id: c.openssl.rsa_generate_key
+    primitive: RSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_generate_key
+    references:
       - "https://www.openssl.org/docs/man3.0/man3/RSA_generate_key.html"
+
+  - id: c.openssl.rsa_private_encrypt
+    primitive: RSA
+    assetType: algorithm
+    functions: [encrypt, sign]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_private_encrypt
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_private_encrypt.html"
+
+  - id: c.openssl.rsa_public_encrypt
+    primitive: RSA
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_public_encrypt
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_public_encrypt.html"
+
+  - id: c.openssl.rsa_private_decrypt
+    primitive: RSA
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_private_decrypt
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_private_decrypt.html"
+
+  - id: c.openssl.rsa_public_decrypt
+    primitive: RSA
+    assetType: algorithm
+    functions: [decrypt, verify]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_public_decrypt
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_public_decrypt.html"
+
+  - id: c.openssl.rsa_sign
+    primitive: RSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_sign
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_sign.html"
+
+  - id: c.openssl.rsa_verify
+    primitive: RSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: RSA_verify
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/RSA_verify.html"
+
+  - id: c.openssl.pem_read_bio_rsaprivatekey
+    primitive: RSA
+    assetType: key
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: PEM_read_bio_RSAPrivateKey
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/PEM_read_bio_PrivateKey.html"
+
+  - id: c.openssl.pem_read_bio_rsapublickey
+    primitive: RSA
+    assetType: key
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: PEM_read_bio_RSAPublicKey
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/PEM_read_bio_PrivateKey.html"
+
+  # --- EC / ECDSA / ECDH ---
+  - id: c.openssl.ec_key_generate_key
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: EC_KEY_generate_key
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EC_KEY_generate_key.html"
+
+  - id: c.openssl.ec_key_new_by_curve_name
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: EC_KEY_new_by_curve_name
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EC_KEY_new.html"
+
+  - id: c.openssl.ecdsa_do_sign
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: ECDSA_do_sign
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/ECDSA_do_sign.html"
+
+  - id: c.openssl.ecdsa_do_verify
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: ECDSA_do_verify
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/ECDSA_do_verify.html"
+
+  - id: c.openssl.ecdsa_sign
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: ECDSA_sign
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/ECDSA_sign.html"
+
+  - id: c.openssl.ecdsa_verify
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: ECDSA_verify
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/ECDSA_verify.html"
+
+  - id: c.openssl.ecdh_compute_key
+    primitive: ECDH
+    assetType: algorithm
+    functions: [keyexchange]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: ECDH_compute_key
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/ECDH_compute_key.html"
+
+  # --- DSA / DH ---
+  - id: c.openssl.dsa_generate_key
+    primitive: DSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: DSA_generate_key
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/DSA_generate_key.html"
+
+  - id: c.openssl.dsa_do_sign
+    primitive: DSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: DSA_do_sign
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/DSA_do_sign.html"
+
+  - id: c.openssl.dsa_do_verify
+    primitive: DSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: DSA_do_verify
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/DSA_do_verify.html"
+
+  - id: c.openssl.dh_generate_key
+    primitive: DH
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: DH_generate_key
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/DH_generate_key.html"
+
+  - id: c.openssl.dh_compute_key
+    primitive: DH
+    assetType: algorithm
+    functions: [keyexchange]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: DH_compute_key
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/DH_compute_key.html"
+
+  # --- AES (legacy low-level + EVP cipher fetchers as identifiers) ---
+  - id: c.openssl.aes_set_encrypt_key
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: AES_set_encrypt_key
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/AES_encrypt.html"
+
+  - id: c.openssl.aes_set_decrypt_key
+    primitive: AES
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: AES_set_decrypt_key
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/AES_encrypt.html"
+
+  - id: c.openssl.aes_encrypt
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: AES_encrypt
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/AES_encrypt.html"
+
+  - id: c.openssl.aes_decrypt
+    primitive: AES
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: AES_decrypt
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/AES_encrypt.html"
+
+  - id: c.openssl.evp_aes_128_gcm
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_aes_128_gcm
+    parameters:
+      keySize: { value: 128 }
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_EncryptInit.html"
+
+  - id: c.openssl.evp_aes_256_gcm
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_aes_256_gcm
+    parameters:
+      keySize: { value: 256 }
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_EncryptInit.html"
+
+  - id: c.openssl.evp_aes_128_cbc
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_aes_128_cbc
+    parameters:
+      keySize: { value: 128 }
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_EncryptInit.html"
+
+  - id: c.openssl.evp_aes_256_cbc
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_aes_256_cbc
+    parameters:
+      keySize: { value: 256 }
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_EncryptInit.html"
+
+  - id: c.openssl.evp_chacha20_poly1305
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_chacha20_poly1305
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_EncryptInit.html"
+
+  # --- Digests ---
+  - id: c.openssl.sha1
+    primitive: SHA-1
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: SHA1
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/SHA1.html"
+
+  - id: c.openssl.sha256
+    primitive: SHA-256
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: SHA256
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/SHA256.html"
+
+  - id: c.openssl.sha384
+    primitive: SHA-384
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: SHA384
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/SHA256.html"
+
+  - id: c.openssl.sha512
+    primitive: SHA-512
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: SHA512
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/SHA256.html"
+
+  - id: c.openssl.md5
+    primitive: MD5
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: MD5
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/MD5.html"
+
+  - id: c.openssl.evp_sha1
+    primitive: SHA-1
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_sha1
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestInit.html"
+
+  - id: c.openssl.evp_sha256
+    primitive: SHA-256
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_sha256
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestInit.html"
+
+  - id: c.openssl.evp_sha384
+    primitive: SHA-384
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_sha384
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestInit.html"
+
+  - id: c.openssl.evp_sha512
+    primitive: SHA-512
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_sha512
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestInit.html"
+
+  - id: c.openssl.evp_md5
+    primitive: MD5
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_md5
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestInit.html"
+
+  # --- HMAC / EVP polymorphic ---
+  - id: c.openssl.hmac
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [digest]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: HMAC
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/HMAC.html"
+
+  - id: c.openssl.evp_digestsign
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [sign]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_DigestSign
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestSign.html"
+
+  - id: c.openssl.evp_digestsigninit
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [sign]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_DigestSignInit
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestSignInit.html"
+
+  - id: c.openssl.evp_digestverify
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [verify]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_DigestVerify
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestVerify.html"
+
+  - id: c.openssl.evp_digestverifyinit
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [verify]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_DigestVerifyInit
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_DigestVerifyInit.html"
 
   - id: c.openssl.evp_pkey_keygen
     primitive: UNKNOWN
@@ -27,3 +582,63 @@ rules:
       symbol: EVP_PKEY_keygen
     references:
       - "https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_keygen.html"
+
+  - id: c.openssl.evp_pkey_q_keygen
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_PKEY_Q_keygen
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_Q_keygen.html"
+
+  - id: c.openssl.evp_pkey_encrypt
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_PKEY_encrypt
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_encrypt.html"
+
+  - id: c.openssl.evp_pkey_decrypt
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_PKEY_decrypt
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_decrypt.html"
+
+  - id: c.openssl.evp_encryptinit_ex
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_EncryptInit_ex
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_EncryptInit.html"
+
+  - id: c.openssl.evp_decryptinit_ex
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: low
+    match:
+      kind: call
+      package: openssl
+      symbol: EVP_DecryptInit_ex
+    references:
+      - "https://www.openssl.org/docs/man3.0/man3/EVP_EncryptInit.html"

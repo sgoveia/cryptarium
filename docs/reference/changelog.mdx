@@ -7,6 +7,14 @@ description: "Documentation-facing release notes. See GitHub Releases for full n
 
 Track tagged releases on [GitHub Releases](https://github.com/sgoveia/cryptarium/releases).
 
+## v0.3.0: deep C/C++ rule coverage
+
+- Expand OpenSSL/libcrypto C rules (RSA, EC/ECDSA/ECDH, DSA/DH, AES, ChaCha20, digests, EVP generics)
+- Add libsodium and mbedTLS C rule packs
+- Add Crypto++ and Botan C++ identifier packs; remove duplicate `cpp` OpenSSL rules (`c` packs already apply to C++)
+- C/C++ `match.package` is an ecosystem tag so non-OpenSSL C APIs match unqualified calls
+- Positive and negative fixtures for every C/C++ rule
+
 ## v0.2.1 — embedded default rule packs
 
 - Embed default `rules/` (source packs + library catalog) in the binary via `go:embed`

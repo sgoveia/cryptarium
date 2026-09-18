@@ -20,7 +20,7 @@ Unlike single-source scanners, it unifies all four evidence sources in one binar
 
 You cannot migrate cryptography you cannot see. NIST, CISA, and CNSA 2.0 all start with inventory; `cryptarium` turns that into a CI-friendly scan of what your repository actually contains.
 
-> **Status: v0.2.1: embedded rule packs + public HTTPS remote scan.** Release binaries and `go install` are self-contained (default `rules/` are embedded). Core detectors, correlation, scoring, CBOM/SARIF, and the GitHub Action ship on tagged releases. Interfaces may still evolve before 1.0. See [DESIGN.md](DESIGN.md) for architecture and [Roadmap](#roadmap) for what is next.
+> **Status: v0.3.0: deep C/C++ rule packs (OpenSSL, libsodium, mbedTLS, Crypto++, Botan); embedded defaults + public HTTPS remote scan.** Release binaries and `go install` are self-contained (default `rules/` are embedded). Core detectors, correlation, scoring, CBOM/SARIF, and the GitHub Action ship on tagged releases. Interfaces may still evolve before 1.0. See [DESIGN.md](DESIGN.md) for architecture and [Roadmap](#roadmap) for what is next.
 
 ---
 
@@ -77,7 +77,7 @@ Source detection uses tree-sitter parsing plus rule packs. Coverage is intention
 
 ```bash
 # Go 1.26+
-go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.2.1
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.3.0
 ```
 
 Pre-built binaries (linux/darwin/windows, amd64/arm64) are attached to [GitHub Releases](https://github.com/sgoveia/cryptarium/releases). Default rule packs ship **inside** the binary; you do not need a `rules/` directory beside it.
@@ -159,7 +159,7 @@ Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
 ### GitHub Action
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.2.1
+- uses: sgoveia/cryptarium@v0.3.0
   with:
     path: .
     fail-on: critical

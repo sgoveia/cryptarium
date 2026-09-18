@@ -239,7 +239,7 @@ func (d *Detector) matchCalls(f collector.FileRef, src []byte, lang *gotreesitte
 		if symText != rule.Match.Symbol {
 			continue
 		}
-		if !packageMatches(rule.Match.Package, pkgText, imports) {
+		if !packageMatches(langNameOf(f), rule.Match.Package, pkgText, imports) {
 			continue
 		}
 		params := resolveParams(rule, src, callNode, lang)
@@ -406,12 +406,13 @@ func captureMap(m gotreesitter.QueryMatch) map[string]*gotreesitter.Node {
 	return out
 }
 
-func packageMatches(wantPackage, pkgIdent string, imports map[string]string) bool {
+func packageMatches(lang, wantPackage, pkgIdent string, imports map[string]string) bool {
 	if wantPackage == "" {
 		return true
 	}
-	// C/OpenSSL: no package qualifier; symbol-only match with package tag "openssl".
-	if wantPackage == "openssl" && pkgIdent == "" {
+	// C/C++ calls are typically unqualified. Match.Package is an ecosystem tag
+	// (openssl, libsodium, mbedtls, …), not an import path.
+	if pkgIdent == "" && (lang == "c" || lang == "cpp") {
 		return true
 	}
 	if path, ok := imports[pkgIdent]; ok {
@@ -482,8 +483,7 @@ func collectImports(lang string, src []byte, gLang *gotreesitter.Language, tree 
 			}
 		}
 	case "c", "cpp":
-		// symbol-only; treat empty pkg as openssl when rule says so
-		out[""] = "openssl"
+		// Unqualified calls; ecosystem tags are matched in packageMatches.
 	}
 	return out
 }

@@ -1,0 +1,298 @@
+# libsodium C API coverage.
+id: c-libsodium
+version: 1
+language: c
+description: libsodium cryptographic API calls.
+
+rules:
+  - id: c.libsodium.crypto_sign_keypair
+    primitive: EdDSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_sign_keypair
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/public-key_signatures"
+
+  - id: c.libsodium.crypto_sign_seed_keypair
+    primitive: EdDSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_sign_seed_keypair
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/public-key_signatures"
+
+  - id: c.libsodium.crypto_sign
+    primitive: EdDSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_sign
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/public-key_signatures"
+
+  - id: c.libsodium.crypto_sign_detached
+    primitive: EdDSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_sign_detached
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/public-key_signatures"
+
+  - id: c.libsodium.crypto_sign_verify_detached
+    primitive: EdDSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_sign_verify_detached
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/public-key_signatures"
+
+  - id: c.libsodium.crypto_sign_open
+    primitive: EdDSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_sign_open
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/public-key_signatures"
+
+  - id: c.libsodium.crypto_box_keypair
+    primitive: ECDH
+    assetType: algorithm
+    functions: [keygen]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_box_keypair
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/authenticated_encryption"
+
+  - id: c.libsodium.crypto_box_easy
+    primitive: ECDH
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_box_easy
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/authenticated_encryption"
+
+  - id: c.libsodium.crypto_box_open_easy
+    primitive: ECDH
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_box_open_easy
+    references:
+      - "https://doc.libsodium.org/public-key_cryptography/authenticated_encryption"
+
+  - id: c.libsodium.crypto_scalarmult_base
+    primitive: ECDH
+    assetType: algorithm
+    functions: [keyexchange]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_scalarmult_base
+    references:
+      - "https://doc.libsodium.org/advanced/scalar_multiplication"
+
+  - id: c.libsodium.crypto_scalarmult
+    primitive: ECDH
+    assetType: algorithm
+    functions: [keyexchange]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_scalarmult
+    references:
+      - "https://doc.libsodium.org/advanced/scalar_multiplication"
+
+  - id: c.libsodium.crypto_aead_chacha20poly1305_encrypt
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_aead_chacha20poly1305_encrypt
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/aead/chacha20-poly1305"
+
+  - id: c.libsodium.crypto_aead_chacha20poly1305_decrypt
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_aead_chacha20poly1305_decrypt
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/aead/chacha20-poly1305"
+
+  - id: c.libsodium.crypto_aead_chacha20poly1305_ietf_encrypt
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_aead_chacha20poly1305_ietf_encrypt
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/aead/chacha20-poly1305/ietf_chacha20-poly1305_construction"
+
+  - id: c.libsodium.crypto_aead_xchacha20poly1305_ietf_encrypt
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_aead_xchacha20poly1305_ietf_encrypt
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/aead/chacha20-poly1305/xchacha20-poly1305_construction"
+
+  - id: c.libsodium.crypto_aead_xchacha20poly1305_ietf_decrypt
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_aead_xchacha20poly1305_ietf_decrypt
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/aead/chacha20-poly1305/xchacha20-poly1305_construction"
+
+  - id: c.libsodium.crypto_aead_aes256gcm_encrypt
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_aead_aes256gcm_encrypt
+    parameters:
+      keySize: { value: 256 }
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/aead/aes-256-gcm"
+
+  - id: c.libsodium.crypto_aead_aes256gcm_decrypt
+    primitive: AES
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_aead_aes256gcm_decrypt
+    parameters:
+      keySize: { value: 256 }
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/aead/aes-256-gcm"
+
+  - id: c.libsodium.crypto_hash_sha256
+    primitive: SHA-256
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_hash_sha256
+    references:
+      - "https://doc.libsodium.org/hashing/generic_hashing"
+
+  - id: c.libsodium.crypto_hash_sha512
+    primitive: SHA-512
+    assetType: algorithm
+    functions: [digest]
+    confidence: high
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_hash_sha512
+    references:
+      - "https://doc.libsodium.org/hashing/generic_hashing"
+
+  - id: c.libsodium.crypto_generichash
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [digest]
+    confidence: low
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_generichash
+    references:
+      - "https://doc.libsodium.org/hashing/generic_hashing"
+
+  - id: c.libsodium.crypto_auth
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [digest]
+    confidence: low
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_auth
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/secret-key_authentication"
+
+  - id: c.libsodium.crypto_secretbox_easy
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_secretbox_easy
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/secretbox"
+
+  - id: c.libsodium.crypto_secretbox_open_easy
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: medium
+    match:
+      kind: call
+      package: libsodium
+      symbol: crypto_secretbox_open_easy
+    references:
+      - "https://doc.libsodium.org/secret-key_cryptography/secretbox"

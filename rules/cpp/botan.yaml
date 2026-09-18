@@ -1,0 +1,121 @@
+# Botan distinctive type / API names (identifier match; C++ AST is limited).
+id: cpp-botan
+version: 1
+language: cpp
+description: Botan type and API identifiers for inventory.
+
+rules:
+  - id: cpp.botan.rsa_private_key
+    primitive: RSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'RSA_PrivateKey'
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/pubkey.html"
+
+  - id: cpp.botan.rsa_public_key
+    primitive: RSA
+    assetType: algorithm
+    functions: [encrypt, verify]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'RSA_PublicKey'
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/pubkey.html"
+
+  - id: cpp.botan.ecdsa_private_key
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [keygen, sign]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'ECDSA_PrivateKey'
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/pubkey.html"
+
+  - id: cpp.botan.ecdsa_public_key
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'ECDSA_PublicKey'
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/pubkey.html"
+
+  - id: cpp.botan.ecdh_private_key
+    primitive: ECDH
+    assetType: algorithm
+    functions: [keygen, keyexchange]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'ECDH_PrivateKey'
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/pubkey.html"
+
+  - id: cpp.botan.ed25519_private_key
+    primitive: EdDSA
+    assetType: algorithm
+    functions: [keygen, sign]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'Ed25519_PrivateKey'
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/pubkey.html"
+
+  - id: cpp.botan.create_private_key
+    primitive: UNKNOWN
+    assetType: algorithm
+    functions: [keygen]
+    confidence: low
+    match:
+      kind: call
+      package: botan
+      symbol: create_private_key
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/pubkey.html"
+
+  - id: cpp.botan.aes_128
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'AES_128'
+    parameters:
+      keySize: { value: 128 }
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/cipher_modes.html"
+
+  - id: cpp.botan.aes_256
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'AES_256'
+    parameters:
+      keySize: { value: 256 }
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/cipher_modes.html"
+
+  - id: cpp.botan.sha_256
+    primitive: SHA-256
+    assetType: algorithm
+    functions: [digest]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'SHA_256'
+    references:
+      - "https://botan.randombit.net/handbook/api_ref/hash.html"

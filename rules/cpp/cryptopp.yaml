@@ -1,0 +1,116 @@
+# Crypto++ distinctive type names (identifier match; C++ AST is limited).
+id: cpp-cryptopp
+version: 1
+language: cpp
+description: Crypto++ type identifiers for inventory.
+
+rules:
+  - id: cpp.cryptopp.rsaes_oaep_sha_encryptor
+    primitive: RSA
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'RSAES_OAEP_SHA_Encryptor'
+    references:
+      - "https://www.cryptopp.com/wiki/RSA_Cryptography"
+
+  - id: cpp.cryptopp.rsaes_oaep_sha_decryptor
+    primitive: RSA
+    assetType: algorithm
+    functions: [decrypt]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'RSAES_OAEP_SHA_Decryptor'
+    references:
+      - "https://www.cryptopp.com/wiki/RSA_Cryptography"
+
+  - id: cpp.cryptopp.rsassa_pkcs1v15_sha_signer
+    primitive: RSA
+    assetType: algorithm
+    functions: [sign]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'RSASSA_PKCS1v15_SHA_Signer'
+    references:
+      - "https://www.cryptopp.com/wiki/RSA_Cryptography"
+
+  - id: cpp.cryptopp.rsassa_pkcs1v15_sha_verifier
+    primitive: RSA
+    assetType: algorithm
+    functions: [verify]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'RSASSA_PKCS1v15_SHA_Verifier'
+    references:
+      - "https://www.cryptopp.com/wiki/RSA_Cryptography"
+
+  - id: cpp.cryptopp.invertible_rsa_function
+    primitive: RSA
+    assetType: algorithm
+    functions: [keygen]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'InvertibleRSAFunction'
+    references:
+      - "https://www.cryptopp.com/wiki/Keys_and_Formats"
+
+  - id: cpp.cryptopp.dl_algorithm_ecdsa
+    primitive: ECDSA
+    assetType: algorithm
+    functions: [sign, verify]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'DL_Algorithm_ECDSA'
+    references:
+      - "https://www.cryptopp.com/wiki/Elliptic_Curve_Digital_Signature_Algorithm"
+
+  - id: cpp.cryptopp.ecies_encryptor
+    primitive: ECDH
+    assetType: algorithm
+    functions: [encrypt]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'ECIES_Encryptor'
+    references:
+      - "https://www.cryptopp.com/wiki/Elliptic_Curve_Integrated_Encryption_Scheme"
+
+  - id: cpp.cryptopp.rijndael
+    primitive: AES
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'Rijndael'
+    references:
+      - "https://www.cryptopp.com/wiki/Advanced_Encryption_Standard"
+
+  - id: cpp.cryptopp.chacha20poly1305
+    primitive: ChaCha20
+    assetType: algorithm
+    functions: [encrypt, decrypt]
+    confidence: medium
+    match:
+      kind: identifier
+      pattern: 'ChaCha20Poly1305'
+    references:
+      - "https://www.cryptopp.com/wiki/ChaCha20"
+
+  - id: cpp.cryptopp.sha256
+    primitive: SHA-256
+    assetType: algorithm
+    functions: [digest]
+    confidence: low
+    match:
+      kind: identifier
+      pattern: 'SHA256'
+    references:
+      - "https://www.cryptopp.com/wiki/SHA"

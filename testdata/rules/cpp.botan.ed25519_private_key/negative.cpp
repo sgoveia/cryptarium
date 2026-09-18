@@ -1,0 +1,2 @@
+/* Ed25519_PrivateKey is only mentioned in a comment. */
+void f() {}
