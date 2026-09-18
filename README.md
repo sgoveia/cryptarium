@@ -36,7 +36,7 @@ Two facts make this urgent rather than academic:
 
 ```bash
 # Go 1.26+
-go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.1
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.2
 ```
 
 Pre-built binaries (linux/darwin/windows, amd64/arm64) are attached to [GitHub Releases](https://github.com/sgoveia/cryptarium/releases).
@@ -83,7 +83,7 @@ Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
 ### GitHub Action
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.1.1
+- uses: sgoveia/cryptarium@v0.1.2
   with:
     path: .
     fail-on: critical
@@ -124,7 +124,7 @@ An inventory that flags everything as equally urgent is not actionable. Each fin
 ## Output formats
 
 - **CycloneDX CBOM (1.6+)** — machine-readable inventory using `cryptographic-asset` components, consumable by any CycloneDX-aware tool.
-- **SARIF** — renders in the GitHub Security tab and any SARIF viewer; can gate a build.
+- **SARIF** — appears under **Security → Code scanning** (tool: cryptarium) and any SARIF viewer; can gate a build. The workflow needs `security-events: write`. Public repos support third-party SARIF upload; private/internal repos need GitHub Code Security enabled.
 - **Markdown / HTML** — the human deliverable: findings grouped by service and severity with location, classification, target, and priority.
 
 ## What this is not

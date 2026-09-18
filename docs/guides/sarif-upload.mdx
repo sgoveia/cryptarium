@@ -1,6 +1,6 @@
 ---
 title: "Uploading SARIF"
-description: "Publish cryptarium results to the GitHub Security tab."
+description: "Publish cryptarium results to GitHub Code scanning alerts."
 ---
 
 # Uploading SARIF
@@ -8,14 +8,21 @@ description: "Publish cryptarium results to the GitHub Security tab."
 ## With the Action
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.1.1
+- uses: sgoveia/cryptarium@v0.1.2
   with:
     path: .
     fail-on: critical
     upload-sarif: true
 ```
 
-Ensure the workflow has permission to upload security events (`security-events: write` on the job or workflow as required by GitHub).
+Ensure the workflow (or job) has `security-events: write` so the upload can create code scanning alerts.
+
+Results appear under **Security → Code scanning** for the repository, filtered by tool **cryptarium**. They do not appear under Dependabot, secret scanning, or Code quality.
+
+**Prerequisites**
+
+- **Public repositories:** third-party SARIF upload is supported once the workflow uploads successfully.
+- **Private or internal repositories:** GitHub Code Security must be enabled for the repository (or organization).
 
 ## Manual
 
@@ -23,7 +30,7 @@ Ensure the workflow has permission to upload security events (`security-events: 
 cryptarium scan . --format sarif --output results.sarif
 ```
 
-Upload `results.sarif` with `github/codeql-action/upload-sarif` or your platform's SARIF ingest.
+Upload `results.sarif` with `github/codeql-action/upload-sarif@v4` (set `category: cryptarium`) or your platform's SARIF ingest.
 
 ## Related
 

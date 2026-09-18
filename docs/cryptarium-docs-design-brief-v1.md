@@ -150,7 +150,7 @@ cryptarium scan . --format cbom --output cbom.json
 ```
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.1.1
+- uses: sgoveia/cryptarium@v0.1.2
   with:
     path: .
     fail-on: critical

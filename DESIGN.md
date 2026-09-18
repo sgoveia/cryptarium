@@ -347,7 +347,7 @@ Emitted via the CycloneDX Go library where it supports `cryptographic-asset`; ha
 
 ### SARIF
 
-One `rule` per rule-pack rule (so GitHub renders descriptions and help URIs), one `result` per finding. Priority maps to SARIF level: `critical`/`high` → `error`, `medium` → `warning`, `low` → `note`. `partialFingerprints` carries the finding ID so GitHub tracks findings across commits instead of re-reporting them.
+One `rule` per rule-pack rule (so GitHub renders descriptions and help URIs), one `result` per finding. Priority maps to SARIF level: `critical`/`high` → `error`, `medium` → `warning`, `low` → `note`. Stable finding identity is carried in `properties.findingId`. `partialFingerprints` is omitted so GitHub's `upload-sarif` action can compute `primaryLocationLineHash` from file content (putting the finding ID there produced inconsistent-fingerprint warnings and unstable Security-tab alerts).
 
 ### Markdown / HTML
 
