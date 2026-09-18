@@ -370,6 +370,8 @@ cryptarium scan <path|git-url> [flags]
   --verbose / -v
 ```
 
+A `git-url` target must be an anonymous HTTP(S) remote. The collector shallow-clones with system `git` (`--depth 1 --single-branch`) into a temp directory, scans, then removes the clone. `git` must be on `PATH`. SSH remotes and authenticated/private clones are roadmap items (token or SSH-agent auth), not supported in this release.
+
 Exit codes: `0` clean or below threshold; `1` policy threshold exceeded; `2` scan error (unreadable target, invalid rule pack). CI distinguishes "found problems" from "the tool broke", and conflating them would make the Action untrustworthy.
 
 Other commands: `cryptarium rules validate|list`, `cryptarium version`.

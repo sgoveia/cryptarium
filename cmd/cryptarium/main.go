@@ -12,6 +12,7 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"github.com/sgoveia/cryptarium/internal/collector"
 	"github.com/sgoveia/cryptarium/internal/pipeline"
 	"github.com/sgoveia/cryptarium/internal/report"
 	"github.com/sgoveia/cryptarium/internal/rules"
@@ -88,10 +89,13 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 		write(stderr, fs.usage())
 		return exitScanError
 	}
-	if looksLikeGitURL(fs.target) {
-		writef(stderr, "scan: remote git URLs are not supported yet; pass a local path\n")
+
+	resolved, err := collector.Resolve(context.Background(), fs.target)
+	if err != nil {
+		writef(stderr, "scan: %v\n", err)
 		return exitScanError
 	}
+	defer resolved.Cleanup()
 
 	catalog, err := rules.FindDefaultCatalog()
 	if err != nil {
@@ -105,7 +109,7 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	}
 
 	result, err := pipeline.Run(context.Background(), pipeline.Options{
-		Root:        fs.target,
+		Root:        resolved.Root,
 		Concurrency: fs.concurrency,
 		CatalogPath: catalog,
 		RulesDir:    rulesDir,
@@ -117,7 +121,7 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 
 	meta := report.Meta{
 		ToolVersion:   resolvedVersion(),
-		Root:          fs.target,
+		Root:          resolved.Display,
 		Deterministic: fs.deterministic,
 	}
 
@@ -195,13 +199,6 @@ func defaultFileName(format string) string {
 	}
 }
 
-func looksLikeGitURL(target string) bool {
-	return strings.HasPrefix(target, "http://") ||
-		strings.HasPrefix(target, "https://") ||
-		strings.HasPrefix(target, "git@") ||
-		strings.HasPrefix(target, "ssh://")
-}
-
 func printUsage(w io.Writer) {
 	write(w, `cryptarium — cryptographic discovery and CBOM generation
 
@@ -209,7 +206,7 @@ Usage:
   cryptarium <command> [arguments]
 
 Commands:
-  scan      Scan a local repository path
+  scan      Scan a local path or public HTTPS git URL
   version   Print version
   help      Show this help
 

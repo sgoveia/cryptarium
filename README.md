@@ -14,13 +14,13 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/sgoveia/cryptarium.svg)](https://pkg.go.dev/github.com/sgoveia/cryptarium)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-`cryptarium` is a Go-based CLI that scans a local repository for cryptography. It finds crypto in source, dependency manifests, certificates, and configuration; classifies each use by quantum exposure; and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
+`cryptarium` is a Go-based CLI that scans a local path or public HTTPS git URL for cryptography. It finds crypto in source, dependency manifests, certificates, and configuration; classifies each use by quantum exposure; and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
 
 Unlike single-source scanners, it unifies all four evidence sources in one binary and **correlates** them, so a finding is a linked picture (dependency, source call, key or certificate, and config) rather than four disconnected lists.
 
 You cannot migrate cryptography you cannot see. NIST, CISA, and CNSA 2.0 all start with inventory; `cryptarium` turns that into a CI-friendly scan of what your repository actually contains.
 
-> **Status: v0.1 inventory complete.** Core detectors, correlation, scoring, CBOM/SARIF, and the GitHub Action ship on tagged releases. Interfaces may still evolve before 1.0. See [DESIGN.md](DESIGN.md) for architecture and [Roadmap](#roadmap) for what is next.
+> **Status: v0.2: public HTTPS remote scan + inventory.** Core detectors, correlation, scoring, CBOM/SARIF, and the GitHub Action ship on tagged releases. Interfaces may still evolve before 1.0. See [DESIGN.md](DESIGN.md) for architecture and [Roadmap](#roadmap) for what is next.
 
 ---
 
@@ -28,6 +28,7 @@ You cannot migrate cryptography you cannot see. NIST, CISA, and CNSA 2.0 all sta
 
 | Area | Supported today (v0.1) |
 |---|---|
+| **Targets** | Local directory, or public HTTPS git URL (shallow clone; requires `git` on `PATH`). SSH / private remotes: roadmap |
 | **Source languages** | Go, Python, JavaScript / TypeScript, Java, C / C++ (tree-sitter + YAML rule packs) |
 | **Dependency manifests** | Go only (`go.mod` + known-library catalog). Not yet: `requirements.txt`, `package-lock.json`, `pom.xml`, `Cargo.toml`, and peers |
 | **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx` (X.509 / PKCS#12) |
@@ -35,12 +36,13 @@ You cannot migrate cryptography you cannot see. NIST, CISA, and CNSA 2.0 all sta
 | **Outputs** | Markdown (default), JSON, CycloneDX CBOM 1.6+, SARIF |
 | **CI** | GitHub Action; `--fail-on critical\|high\|medium\|low` |
 
-Source scanning covers Python, JS/TS, Java, and C/C++ call sites even when their package manifests are not read. Not scanned yet: non-Go dependency manifests, JKS keystores, OpenSSH private keys, remote URL / git clone targets, binaries, containers, or live TLS negotiation.
+Source scanning covers Python, JS/TS, Java, and C/C++ call sites even when their package manifests are not read. Not scanned yet: non-Go dependency manifests, JKS keystores, OpenSSH private keys, binaries, containers, or live TLS negotiation. SSH and private/authenticated git remotes are on the roadmap.
 
 ---
 
 ## Features
 
+- **Remote public repos:** shallow-clone an anonymous HTTPS git URL (requires `git` on `PATH`), then scan like a local tree
 - **Multi-source inventory:** source calls, dependency manifests, certificates/keys, and config in one pass
 - **Cross-source correlation:** links related findings (e.g. a library in `go.mod` and the call site that uses it) and raises confidence when evidence agrees
 - **Quantum classification:** Broken (Shor), Weakened (Grover), or Safe/PQC, with a recommended migration target
@@ -75,7 +77,7 @@ Source detection uses tree-sitter parsing plus rule packs. Coverage is intention
 
 ```bash
 # Go 1.26+
-go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.1.2
+go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.2.0
 ```
 
 Pre-built binaries (linux/darwin/windows, amd64/arm64) are attached to [GitHub Releases](https://github.com/sgoveia/cryptarium/releases).
@@ -85,6 +87,9 @@ Pre-built binaries (linux/darwin/windows, amd64/arm64) are attached to [GitHub R
 ```bash
 # Scan the current directory
 cryptarium scan .
+
+# Scan a public HTTPS git repository (requires git on PATH)
+cryptarium scan https://github.com/OWNER/REPO
 
 # Emit a CycloneDX CBOM
 cryptarium scan . --format cbom --output cbom.json
@@ -106,7 +111,7 @@ cryptarium scan . --fail-on critical
 
 ```
 Usage:
-  cryptarium scan [flags] <path>
+  cryptarium scan [flags] <path|git-url>
 
 Flags:
   -concurrency int
@@ -154,7 +159,7 @@ Findings: **4** · 2 critical · 2 high · 0 medium · 0 low
 ### GitHub Action
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.1.2
+- uses: sgoveia/cryptarium@v0.2.0
   with:
     path: .
     fail-on: critical
@@ -209,7 +214,7 @@ Credibility depends on never overstating what static discovery can prove.
 | 3 | Risk scoring; SARIF; GitHub Action | ✅ |
 | 4 | AI-assisted triage; multi-repo scanning; container images | ⬜ |
 
-Near-term coverage expansion includes additional dependency ecosystems and deeper rule packs. Longer roadmap: filesystem/container scanning, runtime/network discovery, binary analysis, org-wide aggregation, cloud KMS/HSM discovery, and export to more CI/GRC destinations.
+Near-term coverage expansion includes additional dependency ecosystems, deeper rule packs, and SSH / private (authenticated) remote git scanning. Longer roadmap: filesystem/container scanning, runtime/network discovery, binary analysis, org-wide aggregation, cloud KMS/HSM discovery, and export to more CI/GRC destinations.
 
 `cryptarium` aims to own **code and CI discovery** (open CLI + GitHub Action producing an auditable CBOM), integrate with enterprise posture platforms via CBOM/SARIF/JSON, and treat runtime/network assurance as roadmap, not as something static analysis can claim today.
 
