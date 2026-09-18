@@ -9,14 +9,14 @@ description: "Source, dependencies, certificates, and configuration — what eac
 
 **Why this matters:** Cryptographic choices are scattered across application code, dependency manifests, embedded certificates, and configuration. An inventory that covers only one of those surfaces leaves migration work blind.
 
-| Source | Supported today (v0.2) | Method |
+| Source | Supported today (v0.3) | Method |
 |---|---|---|
-| **Source code** | Go, Python, JS/TS, Java, C/C++ call sites via YAML rule packs (e.g. `crypto/rsa`, `cryptography`, OpenSSL, Web Crypto, `java.security`) | Tree-sitter parse + rule-pack matching |
+| **Source code** | Go, Python, JS/TS, Java, C/C++ via YAML rule packs (stdlib crypto, OpenSSL, libsodium, mbedTLS, Crypto++, Botan, Web Crypto, `java.security`, …) | Tree-sitter parse + rule-pack matching |
 | **Dependencies** | Go (`go.mod`) against a known-library catalog. Not yet: `requirements.txt`, `package-lock.json`, `pom.xml`, `Cargo.toml` | Manifest parsing; medium confidence until correlated with source |
 | **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx`. Not yet: `.jks`, OpenSSH private keys | X.509 / PKCS#12: signature algorithm, public-key algorithm, key size, curve, validity |
 | **Configuration** | nginx TLS cipher suites, SSH algorithm directives, JWT `alg` in auth-ish JSON/YAML. Not yet: IPsec/VPN | Config and suite-string parsing |
 
-Source scanning covers Python, JS/TS, Java, and C/C++ **call sites** even when their package manifests are not read.
+Source scanning covers Python, JS/TS, Java, and C/C++ **call sites** even when their package manifests are not read. C++ files also run the C rule packs (OpenSSL, libsodium, mbedTLS).
 
 ## Confidence ceilings
 

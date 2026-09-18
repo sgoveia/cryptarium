@@ -13,7 +13,7 @@ Cryptarium looks for cryptography in four places. Source coverage is mostly YAML
 
 | Detector | Looks at | You get |
 |---|---|---|
-| **Source** | Go, Python, JS/TS, Java, C/C++ via rule packs | Call sites, algorithm names, parameters |
+| **Source** | Go, Python, JS/TS, Java, C/C++ via rule packs (OpenSSL, libsodium, mbedTLS, Crypto++, Botan, …) | Call sites, algorithm names, parameters |
 | **Dependencies** | `go.mod` + library catalog | Crypto libraries present (not proof of use) |
 | **Certificates** | PEM, DER, PKCS#12 files | Algorithms, sizes, curves, validity (metadata only) |
 | **Configuration** | nginx TLS, SSH, JWT `alg`, similar | Configured suites and algorithms |

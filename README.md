@@ -26,10 +26,10 @@ You cannot migrate cryptography you cannot see. NIST, CISA, and CNSA 2.0 all sta
 
 ## At a glance
 
-| Area | Supported today (v0.1) |
+| Area | Supported today (v0.3) |
 |---|---|
 | **Targets** | Local directory, or public HTTPS git URL (shallow clone; requires `git` on `PATH`). SSH / private remotes: roadmap |
-| **Source languages** | Go, Python, JavaScript / TypeScript, Java, C / C++ (tree-sitter + YAML rule packs) |
+| **Source languages** | Go, Python, JavaScript / TypeScript, Java, C / C++ (tree-sitter + YAML rule packs: OpenSSL, libsodium, mbedTLS, Crypto++, Botan, …) |
 | **Dependency manifests** | Go only (`go.mod` + known-library catalog). Not yet: `requirements.txt`, `package-lock.json`, `pom.xml`, `Cargo.toml`, and peers |
 | **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx` (X.509 / PKCS#12) |
 | **Configuration** | nginx TLS cipher suites, SSH algorithm directives, JWT `alg` in auth-ish JSON/YAML |
@@ -63,9 +63,10 @@ Source detection uses tree-sitter parsing plus rule packs. Coverage is intention
 | **Python** | [`rules/python/cryptography.yaml`](rules/python/cryptography.yaml) | `cryptography` RSA keygen, `hashlib.md5` |
 | **JavaScript / TypeScript** | [`rules/javascript/webcrypto.yaml`](rules/javascript/webcrypto.yaml) | Node `crypto.createCipheriv`, `crypto.subtle.generateKey` (TS/TSX reuse the JS pack) |
 | **Java** | [`rules/java/security.yaml`](rules/java/security.yaml) | `KeyPairGenerator.getInstance`, `Cipher.getInstance` (algorithm from string args) |
-| **C / C++** | [`rules/c/openssl.yaml`](rules/c/openssl.yaml), [`rules/cpp/openssl.yaml`](rules/cpp/openssl.yaml) | OpenSSL `RSA_generate_key_ex`, `EVP_PKEY_keygen` |
+| **C** | [`rules/c/openssl.yaml`](rules/c/openssl.yaml), [`rules/c/libsodium.yaml`](rules/c/libsodium.yaml), [`rules/c/mbedtls.yaml`](rules/c/mbedtls.yaml) | OpenSSL/libcrypto (RSA, EC/ECDSA/ECDH, DSA/DH, AES, ChaCha20, digests, EVP generics); libsodium; mbedTLS. C++ files also load these packs. |
+| **C++** | [`rules/cpp/cryptopp.yaml`](rules/cpp/cryptopp.yaml), [`rules/cpp/botan.yaml`](rules/cpp/botan.yaml) | Distinctive Crypto++ and Botan type/API identifiers (plus all **C** packs above via language alias) |
 
-**Dependency manifests (Go only in v0.1):** [`rules/libraries/catalog.yaml`](rules/libraries/catalog.yaml) flags known crypto modules in `go.mod` (e.g. `golang.org/x/crypto`, CIRCL, go-jose) at medium confidence until correlated with source. Python, JavaScript, Java, and C/C++ are covered via **source** rules above; their package managers are not parsed yet.
+**Dependency manifests (Go only):** [`rules/libraries/catalog.yaml`](rules/libraries/catalog.yaml) flags known crypto modules in `go.mod` (e.g. `golang.org/x/crypto`, CIRCL, go-jose) at medium confidence until correlated with source. Python, JavaScript, Java, and C/C++ are covered via **source** rules above; their package managers are not parsed yet.
 
 **Certificates:** signature algorithm, public-key algorithm, key size, curve, and validity from parsed X.509 / PKCS#12 material. Private key bytes are never emitted.
 
