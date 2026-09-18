@@ -12,7 +12,7 @@ Choose the path that matches your environment.
     Requires [Go 1.26+](https://go.dev/dl/).
 
     ```bash
-    go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.2.0
+    go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.2.1
     ```
 
     Ensure `$(go env GOPATH)/bin` is on your `PATH`, then verify:
@@ -25,7 +25,7 @@ Choose the path that matches your environment.
   <Tab title="GitHub Releases">
     Pre-built binaries for linux, darwin, and windows (amd64 / arm64) are attached to each [tagged release](https://github.com/sgoveia/cryptarium/releases).
 
-    Download the archive for your platform, extract `cryptarium`, and place it on your `PATH`.
+    Download the archive for your platform, extract `cryptarium`, and place it on your `PATH`. Default rule packs are **embedded** in the binary — you do not need a `rules/` directory beside it.
   </Tab>
 
   <Tab title="From source">
@@ -45,7 +45,7 @@ Choose the path that matches your environment.
 For CI, prefer the published Action rather than installing the binary by hand:
 
 ```yaml
-- uses: sgoveia/cryptarium@v0.2.0
+- uses: sgoveia/cryptarium@v0.2.1
   with:
     path: .
     fail-on: critical
