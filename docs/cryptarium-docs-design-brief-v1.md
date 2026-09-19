@@ -230,6 +230,7 @@ Detectors & rules
 
 Guides
 ├── First scan in 5 minutes             (/guides/first-scan)
+├── CI/CD & workflow integration        (/guides/ci-cd)
 ├── CI with --fail-on                   (/guides/ci-fail-on)
 ├── Uploading SARIF                     (/guides/sarif-upload)
 └── Reading the migration report        (/guides/migration-report)

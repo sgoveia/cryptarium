@@ -7,12 +7,16 @@ description: "Fail the build when findings meet or exceed a severity threshold."
 
 Gate merges when the inventory still contains findings above a chosen severity.
 
+For GitOps schedules, GitLab/CLI jobs, and agentic follow-ups on the same artifacts, see [CI/CD & workflow integration](/guides/ci-cd).
+
 ## Local
 
 ```bash
 cryptarium scan . --fail-on critical
 echo $?   # 1 if any critical findings; 0 otherwise; 2 on scan error
 ```
+
+Outputs are written before the process exits on a threshold breach.
 
 ## GitHub Actions
 
@@ -26,7 +30,10 @@ echo $?   # 1 if any critical findings; 0 otherwise; 2 on scan error
 
 Start with `critical`, then tighten to `high` once the backlog is under control. Pair with [SARIF upload](/guides/sarif-upload) so failures are inspectable under Security → Code scanning.
 
+Thresholds follow [risk scoring](/concepts/scoring) priority bands.
+
 ## Related
 
+- [CI/CD & workflow integration](/guides/ci-cd)
 - [Flags & exit codes](/cli/flags)
 - [Risk scoring](/concepts/scoring)
