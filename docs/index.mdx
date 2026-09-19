@@ -35,7 +35,7 @@ Unlike single-source scanners, it correlates all four evidence sources so a find
 | **Dependency manifests** | Go only (`go.mod`) |
 | **Certificates & keys** | `.pem`, `.crt`, `.cer`, `.der`, `.key`, `.p12`, `.pfx` |
 | **Outputs** | Markdown (default), JSON, CycloneDX CBOM 1.6+, SARIF |
-| **CI** | GitHub Action; `--fail-on` |
+| **CI** | GitHub Action; `--fail-on`; CLI for GitLab / generic pipelines |
 
 <CardGroup cols={3}>
   <Card title="Install" icon="download" href="/install">
@@ -44,8 +44,8 @@ Unlike single-source scanners, it correlates all four evidence sources so a find
   <Card title="Quickstart" icon="rocket" href="/quickstart">
     Scan a repo and read your first migration report.
   </Card>
-  <Card title="CI & SARIF" icon="github" href="/cli/github-action">
-    Gate builds with `--fail-on` and upload SARIF to GitHub Security.
+  <Card title="CI & workflows" icon="github" href="/guides/ci-cd">
+    Gate CI/GitOps pipelines and feed agents with SARIF, CBOM, and JSON.
   </Card>
 </CardGroup>
 

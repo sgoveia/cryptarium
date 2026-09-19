@@ -7,6 +7,8 @@ description: "Run cryptarium in GitHub Actions with optional SARIF upload."
 
 **Purpose:** Run a scan in CI without installing the binary by hand, and optionally upload SARIF to GitHub code scanning.
 
+For the full DevOps / SecOps playbook (GitOps, GitLab/CLI, agentic loops), start at [CI/CD & workflow integration](/guides/ci-cd).
+
 ## Example
 
 ```yaml
@@ -17,12 +19,22 @@ description: "Run cryptarium in GitHub Actions with optional SARIF upload."
     upload-sarif: true
 ```
 
-## Typical inputs
+Pin the Action to a tagged release. The composite Action installs Go 1.26, `go install`s the tagged CLI ref (or builds from the Action checkout on non-tag refs), runs the report scan with your `fail-on`, then — when `upload-sarif` is true — runs a second SARIF scan with `--fail-on none` and `--deterministic` so upload still happens if the gate fails.
 
-| Input | Description |
-|---|---|
-| `path` | Repository path to scan |
-| `fail-on` | Severity threshold for a failing job |
-| `upload-sarif` | Upload results to Security → Code scanning when true |
+## Inputs
 
-Pin the Action to a tagged release. See [Uploading SARIF](/guides/sarif-upload) and [CI with --fail-on](/guides/ci-fail-on).
+| Input | Default | Description |
+| --- | --- | --- |
+| `path` | `.` | Repository path to scan |
+| `fail-on` | `none` | Fail the job when priority reaches `critical`, `high`, `medium`, `low`, or `none` |
+| `format` | `markdown` | Human report format: `markdown`, `json`, or `cbom` |
+| `output` | `CRYPTO-REPORT.md` | Output path for that report format |
+| `upload-sarif` | `true` | Emit `results.sarif` and upload to Security → Code scanning |
+
+Requires `security-events: write` on the job (or workflow) when uploading SARIF.
+
+## Related
+
+- [CI/CD & workflow integration](/guides/ci-cd)
+- [Uploading SARIF](/guides/sarif-upload)
+- [CI with --fail-on](/guides/ci-fail-on)
