@@ -13,6 +13,7 @@
 [![CI](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml/badge.svg)](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sgoveia/cryptarium.svg)](https://pkg.go.dev/github.com/sgoveia/cryptarium)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Website](https://img.shields.io/badge/website-cryptarium.dev-005DFC.svg)](https://cryptarium.dev)
 
 `cryptarium` is a Go-based CLI that scans a local path or public HTTPS git URL for cryptography. It finds crypto in source, dependency manifests, certificates, and configuration; classifies each use by quantum exposure; and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
 
@@ -93,19 +94,19 @@ cryptarium scan .
 cryptarium scan https://github.com/OWNER/REPO
 
 # Emit a CycloneDX CBOM
-cryptarium scan . --format cbom --output cbom.json
+cryptarium scan --format cbom --output cbom.json .
 
 # Emit SARIF for GitHub code scanning
-cryptarium scan . --format sarif --output results.sarif
+cryptarium scan --format sarif --output results.sarif .
 
 # Human-readable migration report (default format)
-cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+cryptarium scan --format markdown --output CRYPTO-REPORT.md .
 
 # Machine-readable JSON
-cryptarium scan . --format json --output findings.json
+cryptarium scan --format json --output findings.json .
 
 # Fail CI when anything scores Critical
-cryptarium scan . --fail-on critical
+cryptarium scan --fail-on critical .
 ```
 
 ### Scan flags

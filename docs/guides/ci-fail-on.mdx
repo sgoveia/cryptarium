@@ -12,7 +12,7 @@ For GitOps schedules, GitLab/CLI jobs, and agentic follow-ups on the same artifa
 ## Local
 
 ```bash
-cryptarium scan . --fail-on critical
+cryptarium scan --fail-on critical .
 echo $?   # 1 if any critical findings; 0 otherwise; 2 on scan error
 ```
 

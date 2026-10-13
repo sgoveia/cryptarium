@@ -18,13 +18,13 @@ cryptarium version
 
 ```bash
 cd /path/to/your/repo
-cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+cryptarium scan --format markdown --output CRYPTO-REPORT.md .
 ```
 
 Or scan a public HTTPS repository (requires `git` on `PATH`):
 
 ```bash
-cryptarium scan https://github.com/OWNER/REPO --format markdown --output CRYPTO-REPORT.md
+cryptarium scan --format markdown --output CRYPTO-REPORT.md https://github.com/OWNER/REPO
 ```
 
 ## Open the report
@@ -38,8 +38,8 @@ Example finding line:
 ## Optional: CBOM + SARIF
 
 ```bash
-cryptarium scan . --format cbom --output cbom.json
-cryptarium scan . --format sarif --output results.sarif
+cryptarium scan --format cbom --output cbom.json .
+cryptarium scan --format sarif --output results.sarif .
 ```
 
 ## Next

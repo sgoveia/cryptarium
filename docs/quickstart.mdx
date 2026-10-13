@@ -34,13 +34,13 @@ cryptarium scan https://github.com/OWNER/REPO
 
 ```bash
 # Human-readable migration report
-cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+cryptarium scan --format markdown --output CRYPTO-REPORT.md .
 
 # CycloneDX CBOM
-cryptarium scan . --format cbom --output cbom.json
+cryptarium scan --format cbom --output cbom.json .
 
 # SARIF for GitHub code scanning
-cryptarium scan . --format sarif --output results.sarif
+cryptarium scan --format sarif --output results.sarif .
 ```
 
 ```yaml

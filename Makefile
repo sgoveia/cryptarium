@@ -21,7 +21,7 @@ vuln: ## Vulnerability scan
 	govulncheck $(PKG)
 
 selfscan: build ## Scan this repo with the tool itself
-	./bin/$(BIN) scan . --format markdown
+	./bin/$(BIN) scan --format markdown .
 
 golden: ## Regenerate golden files (review the diff)
 	go test $(PKG) -run TestGolden -update

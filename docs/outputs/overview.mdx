@@ -15,10 +15,10 @@ One scan can emit multiple formats. Use the format that matches the consumer.
 | **JSON** | `--format json` | Custom tooling and internal pipelines |
 
 ```bash
-cryptarium scan . --format cbom --output cbom.json
-cryptarium scan . --format sarif --output results.sarif
-cryptarium scan . --format markdown --output CRYPTO-REPORT.md
-cryptarium scan . --format json --output findings.json
+cryptarium scan --format cbom --output cbom.json .
+cryptarium scan --format sarif --output results.sarif .
+cryptarium scan --format markdown --output CRYPTO-REPORT.md .
+cryptarium scan --format json --output findings.json .
 ```
 
 `--format` is repeatable when you need several artifacts from one run. See each format page for structure and caveats.
