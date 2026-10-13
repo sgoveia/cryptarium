@@ -393,7 +393,7 @@ alias cdc='cd /workspaces/cryptarium'
 alias cr='go run ./cmd/cryptarium'
 alias crs='go run ./cmd/cryptarium scan .'
 # Self-scan: the tool must always be able to scan its own repo cleanly.
-alias selfscan='go run ./cmd/cryptarium scan . --format markdown'
+alias selfscan='go run ./cmd/cryptarium scan --format markdown .'
 
 # Codespaces niceties
 [[ -n "${CODESPACES:-}" ]] && export EDITOR="code --wait"
@@ -484,7 +484,7 @@ vuln: ## Vulnerability scan
 	govulncheck $(PKG)
 
 selfscan: build ## Scan this repo with the tool itself
-	./bin/$(BIN) scan . --format markdown
+	./bin/$(BIN) scan --format markdown .
 
 check: fmt lint test ## Everything CI runs
 

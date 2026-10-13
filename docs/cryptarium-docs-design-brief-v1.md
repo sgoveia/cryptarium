@@ -146,7 +146,7 @@ Do **not** default to cURL / TypeScript / Python SDK tabs — this is not an HTT
 cryptarium scan .
 
 # Emit a CycloneDX CBOM
-cryptarium scan . --format cbom --output cbom.json
+cryptarium scan --format cbom --output cbom.json .
 ```
 
 ```yaml

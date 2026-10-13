@@ -94,19 +94,19 @@ cryptarium scan .
 cryptarium scan https://github.com/OWNER/REPO
 
 # Emit a CycloneDX CBOM
-cryptarium scan . --format cbom --output cbom.json
+cryptarium scan --format cbom --output cbom.json .
 
 # Emit SARIF for GitHub code scanning
-cryptarium scan . --format sarif --output results.sarif
+cryptarium scan --format sarif --output results.sarif .
 
 # Human-readable migration report (default format)
-cryptarium scan . --format markdown --output CRYPTO-REPORT.md
+cryptarium scan --format markdown --output CRYPTO-REPORT.md .
 
 # Machine-readable JSON
-cryptarium scan . --format json --output findings.json
+cryptarium scan --format json --output findings.json .
 
 # Fail CI when anything scores Critical
-cryptarium scan . --fail-on critical
+cryptarium scan --fail-on critical .
 ```
 
 ### Scan flags
