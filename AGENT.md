@@ -92,7 +92,7 @@ test(rules): negative fixture for go.crypto.rsa.generatekey in comments
 chore(deps): bump cyclonedx-gomod
 ```
 
-Scopes match package names: `collector`, `detector/source`, `detector/deps`, `detector/certs`, `detector/config`, `correlate`, `classify`, `score`, `policy`, `rules`, `report`, `cmd`.
+Scopes match package names: `collector`, `detector/source`, `detector/deps`, `detector/certs`, `detector/config`, `correlate`, `classify`, `score`, `policy`, `rules`, `report`, `cmd`, `site`, `ci`.
 
 PR descriptions state: what changed, which pipeline stage, whether any type in `internal/model` changed (breaking), what tests were added, and what was deliberately left out.
 
@@ -126,6 +126,8 @@ Environment: GitHub Codespaces with the dev container in `.devcontainer/`. Go, l
 | Add a CLI flag | `cmd/cryptarium/` — parsing only, no logic |
 | Change a core type | `internal/model/` — breaking; flag it in the PR |
 | Change how findings are linked | `internal/correlate/` |
+| Change the marketing website (cryptarium.dev) | `site/` (static HTML/CSS/JS; GitHub Pages) |
+| Change Mintlify developer docs | `docs/` |
 
 ## 9. Anti-patterns seen in this problem space
 

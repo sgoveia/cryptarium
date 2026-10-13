@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1200 900"
+     role="img"
+     aria-labelledby="title desc">
+  <title id="title">Cryptarium</title>
+  <desc id="desc">White geometric C surrounding an electric blue quantum atom symbol, with a white cryptarium wordmark for dark backgrounds.</desc>
+
+  <path
+    fill="#FFFFFF"
+    d="M600 105
+       C415 105 265 255 265 440
+       C265 625 415 775 600 775
+       C690 775 773 740 838 680
+       L778 620
+       C730 664 668 690 600 690
+       C462 690 350 578 350 440
+       C350 302 462 190 600 190
+       C668 190 730 216 778 260
+       L838 200
+       C773 140 690 105 600 105 Z
+       M778 260 L838 200 L790 152 L730 212 Z
+       M778 620 L838 680 L790 728 L730 668 Z"/>
+
+  <g fill="none" stroke="#005DFC" stroke-width="24" stroke-linecap="round">
+    <ellipse cx="600" cy="440" rx="150" ry="72" transform="rotate(0 600 440)"/>
+    <ellipse cx="600" cy="440" rx="150" ry="72" transform="rotate(60 600 440)"/>
+    <ellipse cx="600" cy="440" rx="150" ry="72" transform="rotate(-60 600 440)"/>
+  </g>
+  <circle cx="600" cy="440" r="43" fill="#005DFC"/>
+
+  <text x="600" y="865"
+        text-anchor="middle"
+        fill="#FFFFFF"
+        font-family="Avenir Next, Avenir, Montserrat, Helvetica Neue, Arial, sans-serif"
+        font-size="112"
+        font-weight="700"
+        letter-spacing="-4">cryptarium</text>
+</svg>

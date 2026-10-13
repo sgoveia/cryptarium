@@ -13,6 +13,7 @@
 [![CI](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml/badge.svg)](https://github.com/sgoveia/cryptarium/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/sgoveia/cryptarium.svg)](https://pkg.go.dev/github.com/sgoveia/cryptarium)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Website](https://img.shields.io/badge/website-cryptarium.dev-005DFC.svg)](https://cryptarium.dev)
 
 `cryptarium` is a Go-based CLI that scans a local path or public HTTPS git URL for cryptography. It finds crypto in source, dependency manifests, certificates, and configuration; classifies each use by quantum exposure; and emits a standards-based **Cryptographic Bill of Materials (CBOM)** plus a prioritized migration report.
 

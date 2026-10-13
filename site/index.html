@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'"
+    />
+    <title>cryptarium — cryptographic discovery for the post-quantum transition</title>
+    <meta
+      name="description"
+      content="cryptarium scans source, dependencies, certificates, and configuration for cryptography, classifies quantum exposure, and emits a CBOM plus a prioritized migration report."
+    />
+    <link rel="canonical" href="https://cryptarium.dev/" />
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cryptarium.dev/" />
+    <meta property="og:title" content="cryptarium" />
+    <meta
+      property="og:description"
+      content="Cryptographic discovery and CBOM generation for the post-quantum transition."
+    />
+    <meta property="og:image" content="https://cryptarium.dev/assets/img/logo.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="cryptarium" />
+    <meta
+      name="twitter:description"
+      content="Cryptographic discovery and CBOM generation for the post-quantum transition."
+    />
+    <meta name="twitter:image" content="https://cryptarium.dev/assets/img/logo.png" />
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="brand" href="/" aria-label="cryptarium home">
+          <img class="brand__light" src="/assets/img/light.svg" alt="cryptarium" width="200" height="40" />
+          <img class="brand__dark" src="/assets/img/dark.svg" alt="cryptarium" width="200" height="40" />
+        </a>
+        <nav class="nav" aria-label="Primary">
+          <a href="#install">Install</a>
+          <a href="#coverage">Coverage</a>
+          <a href="https://docs.cryptarium.dev/">Docs</a>
+          <a href="https://github.com/sgoveia/cryptarium">GitHub</a>
+          <a class="nav__cta" href="#install">Get started</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__inner">
+          <div class="hero__copy">
+            <h1 id="hero-title">Cryptographic discovery and CBOM generation for the post-quantum transition.</h1>
+            <p class="hero__lede">
+              Scan source, dependencies, certificates, and configuration. Correlate the evidence. Classify quantum
+              exposure. Emit a CycloneDX CBOM and a prioritized migration report.
+            </p>
+            <div class="hero__actions">
+              <a class="btn btn--primary" href="#install">Install</a>
+              <a class="btn btn--ghost" href="https://docs.cryptarium.dev/">Read the docs</a>
+              <a class="btn btn--ghost" href="https://github.com/sgoveia/cryptarium">GitHub</a>
+            </div>
+          </div>
+          <div class="hero__mark" aria-hidden="true">
+            <img class="brand__light" src="/assets/img/light.svg" alt="" width="560" height="420" />
+            <img class="brand__dark" src="/assets/img/dark.svg" alt="" width="560" height="420" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Synced from README.md § Install — bump version when README bumps -->
+      <section id="install" class="section--tint" aria-labelledby="install-title">
+        <div class="section__inner">
+          <p class="section__eyebrow">Install</p>
+          <h2 class="section__title" id="install-title">One binary. Rules embedded.</h2>
+          <p class="section__intro">
+            Go 1.26+. Pre-built binaries for linux, darwin, and windows (amd64/arm64) are on GitHub Releases. Default
+            rule packs ship inside the binary.
+          </p>
+          <div class="codeblock">
+            <button type="button" class="codeblock__copy" data-copy="install-cmd" aria-label="Copy install command">
+              Copy
+            </button>
+            <pre><code id="install-cmd">go install github.com/sgoveia/cryptarium/cmd/cryptarium@v0.3.0</code></pre>
+          </div>
+          <p class="install-links">
+            <a href="https://github.com/sgoveia/cryptarium/releases/latest">Latest release binaries</a>
+            <a href="https://docs.cryptarium.dev/quickstart">Quickstart in the docs</a>
+          </p>
+        </div>
+      </section>
+
+      <!-- Synced from README.md § At a glance -->
+      <section id="coverage" aria-labelledby="coverage-title">
+        <div class="section__inner">
+          <p class="section__eyebrow">What it scans</p>
+          <h2 class="section__title" id="coverage-title">Four evidence sources, one inventory.</h2>
+          <p class="section__intro">
+            Unlike single-source scanners, cryptarium unifies and correlates findings so a result is a linked picture —
+            not four disconnected lists.
+          </p>
+          <ul class="coverage">
+            <li>
+              <h3>Source</h3>
+              <p>Go, Python, JavaScript/TypeScript, Java, C/C++ via tree-sitter and YAML rule packs.</p>
+            </li>
+            <li>
+              <h3>Dependencies</h3>
+              <p>Go modules today (<code>go.mod</code> + known-library catalog). Other ecosystems via source rules.</p>
+            </li>
+            <li>
+              <h3>Certificates &amp; keys</h3>
+              <p>X.509 and PKCS#12 (<code>.pem</code>, <code>.crt</code>, <code>.p12</code>, …). Private key bytes are never emitted.</p>
+            </li>
+            <li>
+              <h3>Configuration</h3>
+              <p>nginx TLS cipher suites, SSH algorithm directives, JWT <code>alg</code> in auth-ish JSON/YAML.</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Synced from README.md § Example output -->
+      <section class="section--tint" aria-labelledby="output-title">
+        <div class="section__inner">
+          <p class="section__eyebrow">Sample output</p>
+          <h2 class="section__title" id="output-title">Prioritized, not a spreadsheet.</h2>
+          <p class="section__intro">
+            Markdown is the default report. Also available: JSON, CycloneDX CBOM 1.6+, and SARIF for CI.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Class</th>
+                  <th>Location</th>
+                  <th>Primitive</th>
+                  <th>Recommendation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge--critical">critical (83)</span></td>
+                  <td>broken</td>
+                  <td><code>certs/ecdsa-p256.pem</code></td>
+                  <td>ECDSA</td>
+                  <td>ML-DSA-65 (FIPS 204)</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge--critical">critical (83)</span></td>
+                  <td>broken</td>
+                  <td><code>certs/rsa2048.pem</code></td>
+                  <td>RSA</td>
+                  <td>ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204)</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge--high">high (70)</span></td>
+                  <td>broken</td>
+                  <td><code>go.mod:6</code></td>
+                  <td>RSA</td>
+                  <td>ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204)</td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge--high">high (78)</span></td>
+                  <td>broken</td>
+                  <td><code>token.go:9</code></td>
+                  <td>RSA</td>
+                  <td>ML-KEM-768 / ML-DSA-65 (FIPS 203 / FIPS 204)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Synced from README.md § Classification and prioritization — FIPS citations only -->
+      <section aria-labelledby="class-title">
+        <div class="section__inner">
+          <p class="section__eyebrow">Classification</p>
+          <h2 class="section__title" id="class-title">Broken, weakened, or safe — with a migration target.</h2>
+          <p class="section__intro">
+            Classifications and targets track NIST FIPS 203/204/205. Hybrid classical-plus-PQC constructions are a
+            first-class recommended transition state.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Classical primitive</th>
+                  <th>Status</th>
+                  <th>Recommended target</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>RSA</td>
+                  <td><span class="badge badge--broken">Broken (Shor)</span></td>
+                  <td>ML-KEM (FIPS 203) for key establishment; ML-DSA (FIPS 204) for signatures</td>
+                </tr>
+                <tr>
+                  <td>ECDH / DH</td>
+                  <td><span class="badge badge--broken">Broken (Shor)</span></td>
+                  <td>ML-KEM; hybrid X25519 + ML-KEM-768 during transition</td>
+                </tr>
+                <tr>
+                  <td>ECDSA / EdDSA / DSA</td>
+                  <td><span class="badge badge--broken">Broken (Shor)</span></td>
+                  <td>
+                    ML-DSA (FIPS 204); SLH-DSA (FIPS 205) where a conservative hash-based option is preferred
+                  </td>
+                </tr>
+                <tr>
+                  <td>AES-128</td>
+                  <td><span class="badge badge--weakened">Weakened (Grover)</span></td>
+                  <td>AES-256</td>
+                </tr>
+                <tr>
+                  <td>SHA-256</td>
+                  <td><span class="badge badge--weakened">Weakened (Grover)</span></td>
+                  <td>SHA-384 / SHA-512 in high-assurance contexts</td>
+                </tr>
+                <tr>
+                  <td>SHA-1, MD5, 3DES</td>
+                  <td><span class="badge badge--broken">Already broken</span></td>
+                  <td>Deprecate immediately</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Synced from README.md § GitHub Action -->
+      <section class="section--tint" aria-labelledby="action-title">
+        <div class="section__inner">
+          <p class="section__eyebrow">CI</p>
+          <h2 class="section__title" id="action-title">Gate builds on severity.</h2>
+          <p class="section__intro">
+            Drop the GitHub Action into a workflow. Upload SARIF, fail on a threshold with
+            <code>--fail-on</code>.
+          </p>
+          <div class="codeblock">
+            <button type="button" class="codeblock__copy" data-copy="action-snippet" aria-label="Copy Action snippet">
+              Copy
+            </button>
+            <pre><code id="action-snippet">- uses: sgoveia/cryptarium@v0.3.0
+  with:
+    path: .
+    fail-on: critical
+    upload-sarif: true</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Synced from README.md § What this is not -->
+      <section aria-labelledby="not-title">
+        <div class="section__inner">
+          <p class="section__eyebrow">Scope</p>
+          <h2 class="section__title" id="not-title">What this is not</h2>
+          <p class="section__intro">
+            Credibility depends on never overstating what static discovery can prove.
+          </p>
+          <ul class="limitations">
+            <li>Not a cryptographic correctness auditor (padding, IV reuse, side channels)</li>
+            <li>Not a binary, firmware, or container analyzer (roadmap)</li>
+            <li>
+              Not a runtime or network TLS scanner (roadmap); it sees what code and config contain, not what is
+              negotiated on the wire
+            </li>
+            <li>Not a multi-ecosystem dependency scanner yet; only <code>go.mod</code> manifests today</li>
+            <li>Not a replacement for a cryptographer’s judgment on migration design</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <p>
+          © cryptarium ·
+          <a href="https://github.com/sgoveia/cryptarium/blob/main/LICENSE">Apache-2.0</a>
+          ·
+          <a href="https://github.com/sgoveia/cryptarium/blob/main/DISCLAIMER.md">Disclaimer</a>
+        </p>
+        <nav aria-label="Footer">
+          <a href="https://docs.cryptarium.dev/">Docs</a>
+          <a href="https://github.com/sgoveia/cryptarium">GitHub</a>
+          <a href="https://github.com/sgoveia/cryptarium/releases/latest">Releases</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="/assets/js/main.js" defer></script>
+  </body>
+</html>
