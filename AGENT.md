@@ -98,6 +98,18 @@ PR descriptions state: what changed, which pipeline stage, whether any type in `
 
 **Do not push or merge autonomously.** Commit locally, leave the push to a human. `git push`, `git reset --hard`, and `gh pr merge` are denied in the agent permission config for this reason.
 
+### Cutting a release
+
+Pushing a `v*` tag runs `.github/workflows/release.yml` (GoReleaser). The version is hardcoded in user-facing copy, so a release is not done until that copy matches the tag. In the same PR that prepares the release (before the tag is pushed):
+
+- [ ] **Find every reference to the previous version:** `rg -n 'v?0\.3(\.0)?' README.md docs/ site/` (substitute the old version). Ignore dependency versions in `testdata/` and `go.mod`.
+- [ ] **`README.md`:** the Status line, "Supported today (vX.Y)" heading, `go install …@vX.Y.Z`, and the GitHub Action `uses: sgoveia/cryptarium@vX.Y.Z`.
+- [ ] **`docs/` (Mintlify):** `go install` and `uses:` snippets across install, quickstart, guides, and CLI pages; the Status callout in `index.mdx`; "Supported today" headings; and a new entry at the top of `reference/changelog.mdx`.
+- [ ] **`site/index.html` (cryptarium.dev):** the install command and GitHub Action snippet. Merging this to `main` redeploys the site via `.github/workflows/pages.yml`.
+- [ ] **Re-run the search** and confirm only intentional historical mentions (changelog entries, "shipped in vX.Y.Z" notes) remain.
+
+Content changes in a release (new coverage, removed limitations) follow the same rule: README, `docs/`, and `site/` must say the same thing.
+
 ## 7. Commands
 
 ```bash
